@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:drawable="@color/background_edge">
+
+    </item>
+    <item>
+        <bitmap
+            android:src="@drawable/haarlem_cathsmall"
+            android:gravity="center">
+
+        </bitmap>
+
+
+    </item>
+
+
+</layer-list>

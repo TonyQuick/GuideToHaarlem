@@ -73,15 +73,18 @@ public class MenuItem implements Parcelable {
         items.add(new MenuItem("Coffee Shops",null));
         items.add(new MenuItem("Photo Opportunities",null));
         items.add(new MenuItem("Things to do",null));
-        items.add(new MenuItem("Getting Around",null));
         items.add(new MenuItem("Dutch Taste Test",null));
-        items.add(new MenuItem("Cats of Haarlem",null));
 
 
         return items;
 
     }
+    public static MenuItem getMenuLeft(){
+        return new MenuItem("Cats of Haarlem",null);
+    }
 
-
+    public static  MenuItem getMenuRight(){
+        return new MenuItem("Getting Around",null);
+    }
 
 }
