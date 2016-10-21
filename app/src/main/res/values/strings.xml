@@ -5,6 +5,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_admin">AdminActivity</string>
     <string name="access_token">pk.eyJ1IjoidG9ueXF1aWNrODgiLCJhIjoiY2l1am5wOW15MDAwZzJvdDRtc2hnbXB5ZyJ9.x2-8NLAu0Vb6NUFO8jd-Vw</string>
+    <string name="map_style">mapbox://styles/tonyquick88/ciujrgx2w009i2jmlncmu4b24</string>
 
 
 

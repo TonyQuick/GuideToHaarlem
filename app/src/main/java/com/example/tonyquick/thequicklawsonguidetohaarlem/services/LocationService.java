@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
 import com.example.tonyquick.thequicklawsonguidetohaarlem.Manifest;
 import com.google.android.gms.common.ConnectionResult;
@@ -57,7 +58,7 @@ public class LocationService implements GoogleApiClient.OnConnectionFailedListen
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mClient, request, this);
-
+            Log.d("AJQ","Location updates requested");
         }
     }
 
@@ -80,5 +81,6 @@ public class LocationService implements GoogleApiClient.OnConnectionFailedListen
         LocationServices.FusedLocationApi.removeLocationUpdates(mClient,this);
         mClient.disconnect();
     }
+
 
 }
