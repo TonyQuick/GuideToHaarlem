@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1011121743004",
+    "firebase_url": "https://quick-lawson-guide-to-haarlem.firebaseio.com",
+    "project_id": "quick-lawson-guide-to-haarlem",
+    "storage_bucket": "quick-lawson-guide-to-haarlem.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1011121743004:android:a210d1cb68ac9a8c",
+        "android_client_info": {
+          "package_name": "com.example.tonyquick.thequicklawsonguidetohaarlem"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1011121743004-ij7q8n153qkun9qnh3t3h0kl2pdusr5m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLQKrdxS31gkStweOQrxkW4tPdI93s_BI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

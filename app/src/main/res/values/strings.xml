@@ -7,9 +7,23 @@
     <string name="access_token">pk.eyJ1IjoidG9ueXF1aWNrODgiLCJhIjoiY2l1am5wOW15MDAwZzJvdDRtc2hnbXB5ZyJ9.x2-8NLAu0Vb6NUFO8jd-Vw</string>
     <string name="map_style">mapbox://styles/tonyquick88/ciujrgx2w009i2jmlncmu4b24</string>
 
+    <string name="descriptor_price">Price</string>
+    <string name="descriptor_price_per_person">(average per person)</string>
+    <string name="descriptor_vibe">Vibe</string>
+    <string name="descriptor_style">Style</string>
+    <string name="descriptor_cuisine">Cuisine Type</string>
+    <string name="descriptor_order_suggestions">Order Suggestions</string>
+    <string name="descriptor_speciality">Speciality</string>
+    <string name="descriptor_suggestions">Suggestions</string>
+    <string name="descriptor_time">Time Required</string>
+    <string name="descriptor_tickets">Where to buy tickets</string>
+    <string name="descriptor_distance">Distance from you</string>
+    <string name="descriptor_description">Description</string>
 
-
-
+    <string name="order_by">Order by:</string>
+    <string name="alphabetically">Alphabetically</string>
+    <string name="distance_from">Distance away</string>
+    <string name="on_map_button">View on Map</string>
 
 
 </resources>

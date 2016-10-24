@@ -21,6 +21,7 @@ public class MainMenuAdapter extends RecyclerView.Adapter<MainMenuViewHolder>{
     private OnMenuItemClickListener listener;
 
 
+
     public interface OnMenuItemClickListener{
         void menuItemClicked(MenuItem i);
     }
