@@ -3,6 +3,8 @@ package com.example.tonyquick.thequicklawsonguidetohaarlem.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.example.tonyquick.thequicklawsonguidetohaarlem.activties.MainActivity;
+
 import java.util.ArrayList;
 
 /**
@@ -67,24 +69,24 @@ public class MenuItem implements Parcelable {
 
         ArrayList<MenuItem> items = new ArrayList<>();
 
-        items.add(new MenuItem("Restaurants",null));
-        items.add(new MenuItem("Bars",null));
-        items.add(new MenuItem("Cafes",null));
-        items.add(new MenuItem("Coffee Shops",null));
-        items.add(new MenuItem("Photo Opportunities",null));
-        items.add(new MenuItem("Things to do",null));
-        items.add(new MenuItem("Dutch Taste Test",null));
+        items.add(new MenuItem(MainActivity.STATE_RESTAURANTS,null));
+        items.add(new MenuItem(MainActivity.STATE_BARS,null));
+        items.add(new MenuItem(MainActivity.STATE_CAFES,null));
+        items.add(new MenuItem(MainActivity.STATE_COFFEE_SHOPS,null));
+        items.add(new MenuItem(MainActivity.STATE_PHOTO_OPPORTUNITIES,null));
+        items.add(new MenuItem(MainActivity.STATE_THINGS_TO_DO,null));
+        items.add(new MenuItem(MainActivity.STATE_DUTCH_TASTE,null));
 
 
         return items;
 
     }
     public static MenuItem getMenuLeft(){
-        return new MenuItem("Cats of Haarlem",null);
+        return new MenuItem(MainActivity.STATE_CATS,null);
     }
 
     public static  MenuItem getMenuRight(){
-        return new MenuItem("Getting Around",null);
+        return new MenuItem(MainActivity.STATE_GETTING_AROUND,null);
     }
 
 }

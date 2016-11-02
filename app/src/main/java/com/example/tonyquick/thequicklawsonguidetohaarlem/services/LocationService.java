@@ -10,13 +10,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
-import com.example.tonyquick.thequicklawsonguidetohaarlem.Manifest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.LocationSource;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
 
@@ -27,17 +25,17 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 public class LocationService implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener {
 
     private GoogleApiClient mClient;
-    private LocationServiceHandler listener;
+    private LocationServiceRequestHandler listener;
     private Context context;
 
 
-    public interface LocationServiceHandler{
+    public interface LocationServiceRequestHandler {
         void locationUpdate(LatLng latLng);
         void connectionFailed(String error);
 
     }
 
-    public LocationService(Context context, LocationServiceHandler listener){
+    public LocationService(Context context, LocationServiceRequestHandler listener){
         this.listener = listener;
         this.context = context;
         mClient = new GoogleApiClient.Builder(context)
@@ -48,7 +46,6 @@ public class LocationService implements GoogleApiClient.OnConnectionFailedListen
 
         mClient.connect();
 
-
     }
 
 
@@ -56,11 +53,18 @@ public class LocationService implements GoogleApiClient.OnConnectionFailedListen
     public void onConnected(@Nullable Bundle bundle) {
         LocationRequest request = new LocationRequest();
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        request.setInterval(5000);
+        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mClient, request, this);
-            Log.d("AJQ","Location updates requested");
+
         }
+
+
     }
+
+
+
+
 
     @Override
     public void onConnectionSuspended(int i) {
@@ -75,9 +79,11 @@ public class LocationService implements GoogleApiClient.OnConnectionFailedListen
     @Override
     public void onLocationChanged(Location location) {
         listener.locationUpdate(new LatLng(location.getLatitude(),location.getLongitude()));
+
+
     }
 
-    public void destroy(){
+    public void suspendUpdates(){
         LocationServices.FusedLocationApi.removeLocationUpdates(mClient,this);
         mClient.disconnect();
     }

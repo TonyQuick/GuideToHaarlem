@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:id="@+id/layout_description"
+    android:layout_margin="5dp"
     android:weightSum="3">
 
 
@@ -12,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:maxLines="2"
-        android:textSize="18sp"
+        android:textSize="14sp"
         android:id="@+id/description"
         android:paddingLeft="10dp"
         android:text="Title"
@@ -23,7 +24,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/contents"
         android:text="Contents"
-        android:textSize="18sp"
+        android:textSize="14sp"
         android:layout_weight="1"/>
 
 

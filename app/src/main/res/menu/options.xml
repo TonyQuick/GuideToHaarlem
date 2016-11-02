@@ -8,8 +8,8 @@
         android:title="Settings"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_setting"
+        android:id="@+id/action_admin_access"
         android:orderInCategory="100"
-        android:title="Quatro Aids"
+        android:title="Admin"
         app:showAsAction="never" />
 </menu>

@@ -18,23 +18,27 @@ import java.util.ArrayList;
 public class AttractionAdapter extends RecyclerView.Adapter<AttractionViewHolder> {
 
     private ArrayList<Attraction> currentAttractions;
-    private OnClickAttractionCard listener;
+    private AttractionClickListener listener;
     private String type;
 
 
 
 
-    public AttractionAdapter(ArrayList<Attraction> currentAttractions, OnClickAttractionCard listener, String type){
+    public AttractionAdapter(ArrayList<Attraction> currentAttractions, AttractionClickListener listener, String type){
         this.currentAttractions = currentAttractions;
         this.listener = listener;
         this.type = type;
+    }
+
+    public void updateDataset(ArrayList<Attraction> att){
+        this.currentAttractions = att;
     }
 
 
 
     @Override
     public AttractionViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_attraction,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_attraction_mini,parent,false);
         return new AttractionViewHolder(view);
 
     }
@@ -51,8 +55,8 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionViewHolder
 
 
 
-    public interface OnClickAttractionCard{
-        void onClickAttraction();
+    public interface AttractionClickListener {
+        void onAttractionClicked(Attraction a);
 
 
     }

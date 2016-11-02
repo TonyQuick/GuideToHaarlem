@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">The Quick Lawson Guide to Haarlem</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_admin">AdminActivity</string>
     <string name="access_token">pk.eyJ1IjoidG9ueXF1aWNrODgiLCJhIjoiY2l1am5wOW15MDAwZzJvdDRtc2hnbXB5ZyJ9.x2-8NLAu0Vb6NUFO8jd-Vw</string>
@@ -24,6 +24,28 @@
     <string name="alphabetically">Alphabetically</string>
     <string name="distance_from">Distance away</string>
     <string name="on_map_button">View on Map</string>
+    <string name="cuisine">Cuisine:</string>
+    <string name="vibe">Style:</string>
+    <string name="subject">Subject:</string>
+    <string name="type">Type:</string>
+    <string name="unknown_distance">Unknown</string>
+    <string name="refresh">Refresh</string>
+
+    <string name="card_description">Description</string>
+    <string name="card_price_range">Average Price (per person)</string>
+    <string name="card_cuisine">Cuisine</string>
+    <string name="card_vibe">Vibe</string>
+    <string name="card_type">Type</string>
+    <string name="card_speciality">Speciality</string>
+    <string name="card_suggestions">Suggestions</string>
+    <string name="card_time_required">Time Required</string>
+    <string name="card_where_tickets">Where to get tickets</string>
+    <string name="card_subject">Subject</string>
+    <string name="card_eat_type">Eatery Type</string>
+
+
+
+    <string name="directions">Directions</string>
 
 
 </resources>

@@ -12,6 +12,11 @@ public class AttractionList {
 
     private ArrayList<Attraction> attractions;
     private static AttractionList sInstance;
+    private Attraction currentAttractionInScope;
+
+
+
+
 
 
     public static AttractionList getInstance(){
@@ -21,11 +26,14 @@ public class AttractionList {
 
         return sInstance;
 
+
     }
 
     private AttractionList(){
         attractions = new ArrayList<>();
     }
+
+
 
     public ArrayList<Attraction> getList(){
         return attractions;
@@ -38,9 +46,6 @@ public class AttractionList {
     public void addAttraction(Attraction att){
         attractions.add(att);
     }
-
-
-
 
     public ArrayList<Attraction> subList(String attractionType) {
 
@@ -90,4 +95,12 @@ public class AttractionList {
 
 
 
+
+    public Attraction getCurrentAttractionInScope() {
+        return currentAttractionInScope;
+    }
+
+    public void setCurrentAttractionInScope(Attraction currentAttractionInScope) {
+        this.currentAttractionInScope = currentAttractionInScope;
+    }
 }

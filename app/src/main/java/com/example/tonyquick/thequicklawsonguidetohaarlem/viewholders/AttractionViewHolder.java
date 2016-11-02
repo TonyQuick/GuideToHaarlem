@@ -2,12 +2,11 @@ package com.example.tonyquick.thequicklawsonguidetohaarlem.viewholders;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.example.tonyquick.thequicklawsonguidetohaarlem.R;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.adapters.AttractionAdapter;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.models.Attraction;
+
 
 
 /**
@@ -17,57 +16,61 @@ import com.example.tonyquick.thequicklawsonguidetohaarlem.models.Attraction;
 public class AttractionViewHolder extends RecyclerView.ViewHolder {
 
     private Attraction attraction;
-    private AttractionAdapter.OnClickAttractionCard listener;
+    private AttractionAdapter.AttractionClickListener listener;
 
-    private LinearLayout contentHolder;
-    private TextView title;
+    private TextView title, attributeTitle, attributeContent, distanceAway;
+
 
     public AttractionViewHolder(View itemView) {
         super(itemView);
-        contentHolder = (LinearLayout)itemView.findViewById(R.id.content_container);
-        title = (TextView)itemView.findViewById(R.id.attraction_title);
+        title = (TextView)itemView.findViewById(R.id.mini_title_text);
+        attributeTitle = (TextView)itemView.findViewById(R.id.attribute_title_text);
+        attributeContent = (TextView)itemView.findViewById(R.id.attribute_contents_text);
+        distanceAway = (TextView)itemView.findViewById(R.id.distance_content);
+
+
 
 
     }
 
-    public void updateUI(Attraction att, String type, AttractionAdapter.OnClickAttractionCard listener) {
+    public void updateUI(final Attraction att, String type, final AttractionAdapter.AttractionClickListener listener) {
         this.attraction = att;
+        title.setText(attraction.getTitle());
+        this.listener = listener;
+        if (attraction.getDistanceAway()!=null){
+            String temp = (String.valueOf(attraction.getDistanceAway()))+"km";
+            distanceAway.setText(temp);
+        }
 
 
         switch (type) {
             case "Restaurants":
-                buildRestaurant();
+                attributeTitle.setText(R.string.cuisine);
+                attributeContent.setText(attraction.getCuisineType());
                 break;
             case "Bars":
-                buildBar();
-                break;
             case "Cafes":
-                buildCafe();
-                break;
             case "Coffee Shops":
-                buildCoffeeShop();
+                attributeTitle.setText(R.string.vibe);
+                attributeContent.setText(attraction.getVibe());
                 break;
             case "Photo Opportunities":
-                buildPhotoOpportunity();
+                attributeTitle.setText(R.string.subject);
+                attributeContent.setText(attraction.getSubject());
                 break;
             case "Things to do":
-                buildThingsToDo();
+                attributeTitle.setText(R.string.type);
+                attributeContent.setText(attraction.getThingToDoType());
                 break;
         }
-    }
-    private void buildRestaurant() {
-        //TODO inflate layout_attraction_contents for each attribute required, seperating line between each, add to contentHolder if possible
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onAttractionClicked(AttractionViewHolder.this.attraction);
+            }
+        });
 
-    }
-    private void buildBar() {
-    }
-    private void buildCafe() {
-    }
-    private void buildCoffeeShop() {
-    }
-    private void buildPhotoOpportunity() {
-    }
-    private void buildThingsToDo() {
+
     }
 
 
