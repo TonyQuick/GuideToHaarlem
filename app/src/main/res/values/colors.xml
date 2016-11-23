@@ -10,10 +10,12 @@
     <color name="transparent">#00000000</color>
     <color name="dark_text">#131313</color>
     <color name="white_text">#FFF</color>
-    <color name="seperating_lines">#a3a3a3</color>
+    <color name="seperating_lines">#393939</color>
     <color name="offwhite_background">#eaeaea</color>
     <color name="offwhite_outline">#eadf65</color>
     <color name="my_black">#000</color>
+    <color name="edittext_background">#c2c2c2</color>
+    <color name="light_grey">#b1b1b1</color>
 
     <color name="red">#df0909</color>
 

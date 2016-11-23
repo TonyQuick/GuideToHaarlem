@@ -23,12 +23,11 @@ public class AttractionViewHolder extends RecyclerView.ViewHolder {
 
     public AttractionViewHolder(View itemView) {
         super(itemView);
+
         title = (TextView)itemView.findViewById(R.id.mini_title_text);
         attributeTitle = (TextView)itemView.findViewById(R.id.attribute_title_text);
         attributeContent = (TextView)itemView.findViewById(R.id.attribute_contents_text);
         distanceAway = (TextView)itemView.findViewById(R.id.distance_content);
-
-
 
 
     }

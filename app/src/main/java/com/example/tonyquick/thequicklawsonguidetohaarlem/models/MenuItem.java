@@ -3,6 +3,7 @@ package com.example.tonyquick.thequicklawsonguidetohaarlem.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.example.tonyquick.thequicklawsonguidetohaarlem.R;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.activties.MainActivity;
 
 import java.util.ArrayList;
@@ -14,22 +15,22 @@ import java.util.ArrayList;
 public class MenuItem implements Parcelable {
 
     private String title;
-    private String drawableImage;
+    private int drawableImage;
 
-    public MenuItem(String title, String drawableImage) {
+    public MenuItem(String title, int drawableImage) {
         this.title = title;
         this.drawableImage = drawableImage;
     }
 
     protected MenuItem(Parcel in) {
         title = in.readString();
-        drawableImage = in.readString();
+        drawableImage = in.readInt();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(title);
-        dest.writeString(drawableImage);
+        dest.writeInt(drawableImage);
     }
 
     @Override
@@ -57,7 +58,7 @@ public class MenuItem implements Parcelable {
         return title;
     }
 
-    public String getDrawableImage() {
+    public int getDrawableImage() {
         return drawableImage;
     }
 
@@ -69,24 +70,24 @@ public class MenuItem implements Parcelable {
 
         ArrayList<MenuItem> items = new ArrayList<>();
 
-        items.add(new MenuItem(MainActivity.STATE_RESTAURANTS,null));
-        items.add(new MenuItem(MainActivity.STATE_BARS,null));
-        items.add(new MenuItem(MainActivity.STATE_CAFES,null));
-        items.add(new MenuItem(MainActivity.STATE_COFFEE_SHOPS,null));
-        items.add(new MenuItem(MainActivity.STATE_PHOTO_OPPORTUNITIES,null));
-        items.add(new MenuItem(MainActivity.STATE_THINGS_TO_DO,null));
-        items.add(new MenuItem(MainActivity.STATE_DUTCH_TASTE,null));
+        items.add(new MenuItem(MainActivity.STATE_RESTAURANTS, R.drawable.restaurant));
+        items.add(new MenuItem(MainActivity.STATE_BARS,R.drawable.bar));
+        items.add(new MenuItem(MainActivity.STATE_CAFES,R.drawable.cafe));
+        items.add(new MenuItem(MainActivity.STATE_COFFEE_SHOPS,R.drawable.coffee_shop));
+        items.add(new MenuItem(MainActivity.STATE_PHOTO_OPPORTUNITIES,R.drawable.photo_ops));
+        items.add(new MenuItem(MainActivity.STATE_THINGS_TO_DO,R.drawable.things_to_do));
+        items.add(new MenuItem(MainActivity.STATE_DUTCH_TASTE,0));
 
 
         return items;
 
     }
     public static MenuItem getMenuLeft(){
-        return new MenuItem(MainActivity.STATE_CATS,null);
+        return new MenuItem(MainActivity.STATE_CATS,R.drawable.cats_of_haarlem);
     }
 
     public static  MenuItem getMenuRight(){
-        return new MenuItem(MainActivity.STATE_GETTING_AROUND,null);
+        return new MenuItem(MainActivity.STATE_GETTING_AROUND,R.drawable.getting_around);
     }
 
 }

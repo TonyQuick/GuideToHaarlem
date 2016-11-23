@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/menu_item_image"
-            android:alpha="0.3"
+            android:alpha="0.4"
             android:src="@drawable/haarlem_cathsmall"
             android:scaleType="centerCrop"
 

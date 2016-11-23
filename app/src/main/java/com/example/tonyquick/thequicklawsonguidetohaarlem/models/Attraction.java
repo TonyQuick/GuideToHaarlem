@@ -10,7 +10,7 @@ public class Attraction {
     private double lon;
     private Double distanceAway;
     private ArrayList<String> photoOrToDoSuggestions, orderSuggestions;
-    private String pictureLocation;
+    private String pictureLocationSmall, pictureLocationLarge;
     private boolean bar, restaurant, thingToDo, cafe, coffeeShop, photoOpportunity;
     private String id;
 
@@ -37,13 +37,14 @@ public class Attraction {
         this.distanceAway = builder.distanceAway;
         this.photoOrToDoSuggestions = builder.photoOrToDoSuggestions;
         this.orderSuggestions = builder.orderSuggestions;
-        this.pictureLocation = builder.pictureLocation;
+        this.pictureLocationSmall = builder.pictureLocationSmall;
         this.bar = builder.bar;
         this.restaurant = builder.restaurant;
         this.thingToDo = builder.thingToDo;
         this.cafe = builder.cafe;
         this.coffeeShop = builder.coffeeShop;
         this.photoOpportunity = builder.photoOpportunity;
+
     }
 
     public String getId(){
@@ -106,8 +107,20 @@ public class Attraction {
         return lon;
     }
 
-    public String getPictureLocation() {
-        return pictureLocation;
+    public String getPictureLocationSmall() {
+        return pictureLocationSmall;
+    }
+
+    public String getPictureLocationLarge() {
+        return pictureLocationLarge;
+    }
+
+    public void setPictureLocationSmall(String pictureLocationSmall) {
+        this.pictureLocationSmall = pictureLocationSmall;
+    }
+
+    public void setPictureLocationLarge(String pictureLocationLarge) {
+        this.pictureLocationLarge = pictureLocationLarge;
     }
 
     public boolean isBar() {
@@ -167,13 +180,16 @@ public class Attraction {
     }
 
 
+
+
+
     public static class AttractionBuilder{
         private String title, description, vibe, priceRange, quickEatOrSitdown, cuisineType, speciality, timeRequired, whereToGetTickets, subject, thingToDoType;
         private double lat;
         private double lon;
         private Double distanceAway;
         private ArrayList<String> orderSuggestions,photoOrToDoSuggestions;
-        private String pictureLocation;
+        private String pictureLocationSmall, pictureLocationLarge;
         private boolean bar, restaurant, thingToDo, cafe, coffeeShop, photoOpportunity;
 
         public AttractionBuilder(String title, double lat, double lon, String description) {
@@ -251,7 +267,8 @@ public class Attraction {
 
             return this;
         }
-        public AttractionBuilder addPhotoOpporunity(ArrayList<String> photoOrToDoSuggestions){
+        public AttractionBuilder addPhotoOpporunity(String subject, ArrayList<String> photoOrToDoSuggestions){
+            this.subject=subject;
             this.photoOpportunity=true;
             if (photoOrToDoSuggestions != null) {
                 this.photoOrToDoSuggestions = photoOrToDoSuggestions;
@@ -261,12 +278,6 @@ public class Attraction {
         }
 
 
-
-        public AttractionBuilder addPicture(String pictureLocation){
-            this.pictureLocation=pictureLocation;
-
-            return this;
-        }
 
         public Attraction getAttraction(){
             return new Attraction(this);

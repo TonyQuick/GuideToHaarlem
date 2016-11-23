@@ -1,11 +1,13 @@
 package com.example.tonyquick.thequicklawsonguidetohaarlem.activties;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -18,16 +20,19 @@ import android.widget.FrameLayout;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.R;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.adapters.AttractionAdapter;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.adapters.MainMenuAdapter;
+import com.example.tonyquick.thequicklawsonguidetohaarlem.fragments.AttractionEditorFragment;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.fragments.DisplayAttraction;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.fragments.MainMenuFragment;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.fragments.MapFragmentMain;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.fragments.ShowCategory;
+import com.example.tonyquick.thequicklawsonguidetohaarlem.interfaces.PermissionsHandler;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.models.Attraction;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.models.MenuItem;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.services.AttractionList;
-import com.example.tonyquick.thequicklawsonguidetohaarlem.services.FirebaseListener;
+import com.example.tonyquick.thequicklawsonguidetohaarlem.services.GetFirebaseData;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,8 +40,11 @@ import java.util.Arrays;
 public class MainActivity extends AppCompatActivity implements MainMenuAdapter.OnMenuItemClickListener,
         MainMenuFragment.SmallMenuIconClick,
         AttractionAdapter.AttractionClickListener,
-        ShowCategory.OnSeeDataOnMapButtonClickListener,
-        DisplayAttraction.DirectionsOnMapListener{
+        ShowCategory.ShowCategoryEventListener,
+        DisplayAttraction.DirectionsOnMapListener,
+        AttractionEditorFragment.AttractionEditorListener ,
+        PermissionsHandler,
+        MapFragmentMain.CoordinateGetterCallback{
 
     public static final String STATE_RESTAURANTS = "Restaurants";
     public static final String STATE_BARS = "Bars";
@@ -55,6 +63,9 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
     private FragmentManager fragMan;
     private MapFragmentMain mapFrag, directionsMapFrag;
     private ShowCategory showCategory;
+    AttractionEditorFragment attractionEditorFragment;
+
+
     private DisplayAttraction displayAttraction;
     private ArrayList<MenuItem> menuItems;
     private MenuItem menuLeft, menuRight;
@@ -66,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
     private int screenWidth, screenHeight;
 
     private String currentState = null;
+    private MainActivity mainActivity;
 
 
     @Override
@@ -84,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
         attractionCardFrame = (FrameLayout)findViewById(R.id.display_attraction_card_frame);
         attractionCardFrame.setTranslationX(screenWidth);
         shadeFrame = (FrameLayout)findViewById(R.id.shade_frame);
-        shadeFrame.setVisibility(View.INVISIBLE);
+        //shadeFrame.setVisibility(View.INVISIBLE);
 
 
 
@@ -121,17 +133,19 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
         list.addAttraction(att2);
         list.addAttraction(att3);
         list.addAttraction(att4);*/
-
-        FirebaseListener hype = new FirebaseListener();
+        Log.d("AJQ"," "+list.getSize());
+        if (list.getSize()==0) {
+            GetFirebaseData hype = new GetFirebaseData();
+        }
 
         mDatabase = FirebaseDatabase.getInstance();
         mDbReference = mDatabase.getReference();
-        DatabaseReference attractionsRef = mDbReference.child("Attractions");
+       /* DatabaseReference attractionsRef = mDbReference.child("Attractions");
         DatabaseReference newRecord = attractionsRef.push();
         att1.setId(newRecord.getKey());
         newRecord.setValue(att1);
 
-
+*/
 
 
         fragMan = getSupportFragmentManager();
@@ -140,28 +154,21 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
             mainFrag = MainMenuFragment.newInstance(menuItems,menuLeft,menuRight);
             fragMan.beginTransaction().add(R.id.main_frame,mainFrag).commit();
 
-
-
         }
 
-
-
-
-
     }
-
-
-
-
-
-
 
     @Override
     public void menuItemClicked(MenuItem i) {
         currentState = i.getTitle();
         showCategory = ShowCategory.newInstance(i.getTitle());
-        fragMan.beginTransaction().replace(R.id.main_frame,showCategory,"showCat").addToBackStack("main").commit();
+        Log.d("AJQ",i.getTitle());
+        fragMan.beginTransaction().replace(R.id.main_frame,showCategory,"showCat").setCustomAnimations(R.anim.fade_in,R.anim.fade_out).addToBackStack("main").commit();
+        FragmentTransaction fragTrans = fragMan.beginTransaction();
+        fragTrans.replace(R.id.main_frame,showCategory,"showCat");
+        fragTrans.setCustomAnimations(R.anim.fade_in,R.anim.fade_out);
 
+        Log.d("AJQ","here");
 
     }
 
@@ -169,14 +176,15 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
     public void onSmallIconClicked(MenuItem m) {
 
         currentState = m.getTitle();
-        mapFrag = MapFragmentMain.newInstance(STATE_RESTAURANTS);
-        mapFrag = MapFragmentMain.newInstance(MainActivity.STATE_RESTAURANTS);
+        mapFrag = MapFragmentMain.newInstance(STATE_RESTAURANTS,MapFragmentMain.MAP_STATE_SHOW_ATT);
         fragMan.beginTransaction().replace(R.id.main_frame,mapFrag,"mapfrag").commit();
         Log.d("Ajq","assume we are doing this");
 
     }
 
-    public Boolean checkPermissions() {
+
+    @Override
+    public Boolean checkPermissionsFromFrag() {
         Boolean permissionPreviouslyGranted = true;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             permissionPreviouslyGranted = false;
@@ -184,7 +192,6 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
         }
         return permissionPreviouslyGranted;
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -214,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
             if(temp instanceof DisplayAttraction) {
                 attractionCardFrame.animate().translationX(screenWidth);
                 shadeFrame.animate().alpha(0.0f);
-                shadeFrame.setVisibility(View.INVISIBLE);
+                //shadeFrame.setVisibility(View.INVISIBLE);
 
             }else{
                 super.onBackPressed();
@@ -234,7 +241,6 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
         displayAttraction = DisplayAttraction.newInstance(currentState);
         fragMan.beginTransaction().add(R.id.display_attraction_card_frame,displayAttraction,"displayAttraction").commit();
 
-        //fragMan.beginTransaction().add()
 
         shadeFrame.setVisibility(View.VISIBLE);
         attractionCardFrame.animate().translationX(0);
@@ -245,20 +251,52 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
 
     @Override
     public void seeDataOnMapButtonClicked() {
-        mapFrag = MapFragmentMain.newInstance(currentState);
+        mapFrag = MapFragmentMain.newInstance(currentState,MapFragmentMain.MAP_STATE_SHOW_ATT);
         fragMan.beginTransaction().replace(R.id.main_frame,mapFrag).addToBackStack("ShowCategory").commit();
-
-
 
 
     }
 
     @Override
+    public void makeSuggestionsButtonClicked() {
+        attractionEditorFragment = AttractionEditorFragment.newInstance(AttractionEditorFragment.STATE_ATTRACTION_EDITOR_SUGGESTION,currentState);
+        fragMan.beginTransaction().replace(R.id.main_frame,attractionEditorFragment).addToBackStack("ShowCategory").commit();
+
+    }
+
+    @Override
+    public void editorFinish() {
+        fragMan.popBackStack();
+    }
+
+    @Override
+    public void getCoordsFromMap() {
+        mapFrag = MapFragmentMain.newInstance(null,MapFragmentMain.MAP_STATE_SELECT_LOC);
+        fragMan.beginTransaction().replace(R.id.admin_content_frame,mapFrag).addToBackStack("editor").commit();
+    }
+
+
+
+
+    @Override
     public void onDirectionsOnMapClicked() {
-        directionsMapFrag = MapFragmentMain.newInstance(currentState);
+        directionsMapFrag = MapFragmentMain.newInstance(currentState,MapFragmentMain.MAP_STATE_DIRECTIONS);
         fragMan.beginTransaction().replace(R.id.display_attraction_card_frame,directionsMapFrag).addToBackStack("displayAttraction").commit();
         //TODO need to change to be map frag to handle directions
     }
+
+    @Override
+    public void coordinatesSelectedCallback(LatLng location) {
+        fragMan.popBackStackImmediate();
+        attractionEditorFragment.setCoords(location);
+
+    }
+
+
+
+
+
+
 
 
 
@@ -272,6 +310,9 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
         return true;
     }
 
+
+
+
     @Override
     public boolean onOptionsItemSelected(android.view.MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -280,7 +321,13 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_admin_access) {
+            //TODO login stuff with username and password, move below to response from login request
+
+            Intent i = new Intent(this, AdminActivity.class);
+            startActivity(i);
+            
+
             return true;
         }
 

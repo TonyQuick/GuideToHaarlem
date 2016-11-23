@@ -39,6 +39,10 @@ public class AttractionList {
         return attractions;
     }
 
+    public int getSize(){
+        return attractions.size();
+    }
+
     public Attraction getAttraction(int index){
         return attractions.get(index);
     }
@@ -65,25 +69,25 @@ public class AttractionList {
                     break;
 
                 case "Cafes":
-                    if (attraction.isBar()) {
+                    if (attraction.isCafe()) {
                         tempList.add(attraction);
                     }
                     break;
 
                 case "Coffee Shops":
-                    if (attraction.isBar()) {
+                    if (attraction.isCoffeeShop()) {
                         tempList.add(attraction);
                     }
                     break;
 
                 case "Photo Opportunities":
-                    if (attraction.isBar()) {
+                    if (attraction.isPhotoOpportunity()) {
                         tempList.add(attraction);
                     }
                     break;
 
                 case "Things to do":
-                    if (attraction.isBar()) {
+                    if (attraction.isThingToDo()) {
                         tempList.add(attraction);
                     }
                     break;

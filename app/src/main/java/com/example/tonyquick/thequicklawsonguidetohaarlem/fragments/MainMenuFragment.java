@@ -8,10 +8,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.tonyquick.thequicklawsonguidetohaarlem.R;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.activties.MainActivity;
+import com.example.tonyquick.thequicklawsonguidetohaarlem.adapters.AttractionAdapter;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.adapters.MainMenuAdapter;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.decorators.SpacingDecorator;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.models.MenuItem;
@@ -75,7 +77,7 @@ public class MainMenuFragment extends Fragment {
         menuRecyclerView =(RecyclerView) v.findViewById(R.id.recycler_main_menu);
         //menuRecyclerView.addItemDecoration(new );
 
-        menuAdapter = new MainMenuAdapter(menuItems,(MainActivity)getActivity());
+        menuAdapter = new MainMenuAdapter(menuItems,(MainMenuAdapter.OnMenuItemClickListener) getActivity());
 
         menuRecyclerView.setAdapter(menuAdapter);
         menuRecyclerView.addItemDecoration(new SpacingDecorator(30,SpacingDecorator.SPACE_DECORATOR_ORIENTATION_HORIZONTAL));
@@ -83,6 +85,7 @@ public class MainMenuFragment extends Fragment {
         LinearLayoutManager man = new LinearLayoutManager(getContext());
         man.setOrientation(LinearLayoutManager.HORIZONTAL);
         menuRecyclerView.setLayoutManager(man);
+
 
 
 
@@ -106,6 +109,10 @@ public class MainMenuFragment extends Fragment {
         rightHolderTitle = (TextView) holderRight.findViewById(R.id.menu_item_title);
         rightHolderTitle.setText(right.getTitle());
 
+        ImageView leftHolderImage = (ImageView)holderLeft.findViewById(R.id.menu_item_image);
+        leftHolderImage.setImageResource(left.getDrawableImage());
+        ImageView rightHolderImage = (ImageView)holderRight.findViewById(R.id.menu_item_image);
+        rightHolderImage.setImageResource(right.getDrawableImage());
 
 
 

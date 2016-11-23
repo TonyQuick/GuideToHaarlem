@@ -21,6 +21,7 @@ import com.example.tonyquick.thequicklawsonguidetohaarlem.R;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.activties.MainActivity;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.adapters.AttractionAdapter;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.decorators.SpacingDecorator;
+import com.example.tonyquick.thequicklawsonguidetohaarlem.interfaces.PermissionsHandler;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.models.Attraction;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.services.AttractionList;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.services.LocationService;
@@ -52,7 +53,7 @@ public class ShowCategory extends Fragment implements LocationService.LocationSe
     private LatLng loc=null;
     private LocationService locationService;
     private Button refreshdataset, showOnMap;
-    private OnSeeDataOnMapButtonClickListener listener;
+    private ShowCategoryEventListener listener;
 
     public static final String STATE_ALPHABETICALLY = "alphabetically";
     public static final String STATE_DISTANCE = "distance";
@@ -126,6 +127,14 @@ public class ShowCategory extends Fragment implements LocationService.LocationSe
             }
         });
 
+        Button makeSuggestion = (Button)v.findViewById(R.id.make_suggestion_button);
+        makeSuggestion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.makeSuggestionsButtonClicked();
+            }
+        });
+
         refreshDataset();
         getLocationUpdate();
 
@@ -137,8 +146,8 @@ public class ShowCategory extends Fragment implements LocationService.LocationSe
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnSeeDataOnMapButtonClickListener){
-            listener = (OnSeeDataOnMapButtonClickListener) context;
+        if (context instanceof ShowCategoryEventListener){
+            listener = (ShowCategoryEventListener) context;
         }else{
             throw new RuntimeException(context.toString() + " must implement OnseeDataOnMapButtonClickListener");
         }
@@ -218,7 +227,7 @@ public class ShowCategory extends Fragment implements LocationService.LocationSe
     }
 
     public void getLocationUpdate(){
-        if (((MainActivity) getActivity()).checkPermissions()) {
+        if (((PermissionsHandler) getActivity()).checkPermissionsFromFrag()) {
             locationService = new LocationService(getContext(), this);
         }
     }
@@ -262,8 +271,9 @@ public class ShowCategory extends Fragment implements LocationService.LocationSe
         }
     }
 
-    public interface OnSeeDataOnMapButtonClickListener{
+    public interface ShowCategoryEventListener {
         void seeDataOnMapButtonClicked();
+        void makeSuggestionsButtonClicked();
     }
 
 }

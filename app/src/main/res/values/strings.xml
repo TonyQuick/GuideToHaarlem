@@ -1,11 +1,12 @@
 <resources>
-    <string name="app_name">The Quick Lawson Guide to Haarlem</string>
+    <string name="app_name">Guide to Haarlem</string>
 
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_admin">AdminActivity</string>
     <string name="access_token">pk.eyJ1IjoidG9ueXF1aWNrODgiLCJhIjoiY2l1am5wOW15MDAwZzJvdDRtc2hnbXB5ZyJ9.x2-8NLAu0Vb6NUFO8jd-Vw</string>
     <string name="map_style">mapbox://styles/tonyquick88/ciujrgx2w009i2jmlncmu4b24</string>
+
 
     <string name="descriptor_price">Price</string>
     <string name="descriptor_price_per_person">(average per person)</string>
@@ -40,11 +41,25 @@
     <string name="card_suggestions">Suggestions</string>
     <string name="card_time_required">Time Required</string>
     <string name="card_where_tickets">Where to get tickets</string>
-    <string name="card_subject">Subject</string>
+    <string name="card_subject">Picture Subject</string>
     <string name="card_eat_type">Eatery Type</string>
 
 
     <string name="directions">Directions</string>
+    <string name="edit_existing_attraction">Edit existing attraction</string>
+    <string name="create_new_attraction">Create new attraction</string>
+    <string name="attraction_instructions">Enter attraction title and location manually or use search bar to find details through Google</string>
+    <string name="attraction_editor_title_edit">Edit Attraction</string>
+    <string name="attraction_editor_title_suggestion">Make suggestion</string>
+    <string name="menu_type_restaurant">Restaurant</string>
+    <string name="menu_item_bar">Bar</string>
+    <string name="menu_item_coffee_shop">Coffee Shop</string>
+    <string name="menu_item_cafe">Cafe</string>
+    <string name="menu_item_thing_to_do">Thing To Do</string>
+    <string name="menu_item_photo_op">Photo Opportunity</string>
+    <string name="attraction_edit_selector_title">Select Attraction</string>
+    <string name="attraction_no_types_set">No types to display</string>
+    <string name="card_order_suggestions">Order Suggestions</string>
 
 
 </resources>

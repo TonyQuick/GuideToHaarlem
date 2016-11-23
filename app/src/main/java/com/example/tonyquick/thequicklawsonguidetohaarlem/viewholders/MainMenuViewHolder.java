@@ -15,10 +15,9 @@ import com.example.tonyquick.thequicklawsonguidetohaarlem.models.MenuItem;
 
 public class MainMenuViewHolder extends RecyclerView.ViewHolder {
 
-    TextView title;
-    ImageView image;
-    int position;
-    MenuItem item;
+    private TextView title;
+    private ImageView image;
+    private MenuItem item;
 
 
     public MainMenuViewHolder(View itemView) {
@@ -39,6 +38,9 @@ public class MainMenuViewHolder extends RecyclerView.ViewHolder {
                 listener.menuItemClicked(MainMenuViewHolder.this.item);
             }
         });
+        if (item.getDrawableImage()!=0) {
+            image.setImageResource(item.getDrawableImage());
+        }
     }
 
 
