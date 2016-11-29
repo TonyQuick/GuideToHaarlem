@@ -9,7 +9,20 @@
         app:showAsAction="never" />
     <item
         android:id="@+id/action_admin_access"
-        android:orderInCategory="100"
+        android:orderInCategory="99"
         android:title="Admin"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_login"
+        android:orderInCategory="102"
+        android:title="@string/menu_login"
+        app:showAsAction="never"
+        />
+    <item
+        android:id="@+id/action_logout"
+        android:orderInCategory="102"
+        android:title="@string/menu_logout"
+        app:showAsAction="never"
+        />
+
 </menu>

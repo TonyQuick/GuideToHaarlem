@@ -9,15 +9,22 @@
     <color name="card_view_text_background">#7dd0d0d0</color>
     <color name="transparent">#00000000</color>
     <color name="dark_text">#131313</color>
-    <color name="white_text">#FFF</color>
-    <color name="seperating_lines">#393939</color>
+
+    <color name="white_color">#FFF</color>
+    <color name="white_color_low_alpha">#33ffffff</color>
+    <color name="white_medium_alpha">#82ffffff</color>
+
+    <color name="edittext_background">#c2c2c2</color>
+    <color name="edittext_background_low_alpha">#33c2c2c2</color>
+
+    <color name="seperating_lines">#666666</color>
     <color name="offwhite_background">#eaeaea</color>
     <color name="offwhite_outline">#eadf65</color>
     <color name="my_black">#000</color>
-    <color name="edittext_background">#c2c2c2</color>
     <color name="light_grey">#b1b1b1</color>
 
     <color name="red">#df0909</color>
+    <color name="map_route">#30afbe</color>
 
 
 </resources>

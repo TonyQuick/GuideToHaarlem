@@ -3,6 +3,7 @@ package com.example.tonyquick.thequicklawsonguidetohaarlem.fragments;
 import android.animation.ObjectAnimator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
+import android.app.Service;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,20 +25,37 @@ import com.example.tonyquick.thequicklawsonguidetohaarlem.interfaces.Permissions
 import com.example.tonyquick.thequicklawsonguidetohaarlem.models.Attraction;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.services.AttractionList;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.services.LocationService;
+import com.example.tonyquick.thequicklawsonguidetohaarlem.utilities.Distance;
 import com.mapbox.mapboxsdk.MapboxAccountManager;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.annotations.PolylineOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
+import com.mapbox.services.Constants;
+import com.mapbox.services.commons.ServicesException;
+import com.mapbox.services.commons.geojson.LineString;
+import com.mapbox.services.directions.v5.MapboxDirections;
+import com.mapbox.services.commons.models.Position;
+import com.mapbox.services.directions.v5.DirectionsCriteria;
+import com.mapbox.services.directions.v5.models.DirectionsResponse;
+import com.mapbox.services.directions.v5.models.DirectionsRoute;
+
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.WeakHashMap;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -63,8 +81,10 @@ public class MapFragmentMain extends Fragment implements OnMapReadyCallback, Loc
     Button doneButton;
     ImageButton currentLocButton;
     TextView instructionsText;
-
+    private boolean directionsRequired = false;
+    Marker destination;
     AttractionAdapter.AttractionClickListener listener;
+    private DirectionsRoute route;
 
     public static final String MAP_STATE_SHOW_ATT = "show att";
     public static final String MAP_STATE_SELECT_LOC = "select loc";
@@ -97,6 +117,7 @@ public class MapFragmentMain extends Fragment implements OnMapReadyCallback, Loc
 
         }
         MapboxAccountManager.start(getContext(),getString(R.string.access_token));
+
 
     }
 
@@ -146,7 +167,12 @@ public class MapFragmentMain extends Fragment implements OnMapReadyCallback, Loc
         if (state.equals(MAP_STATE_SHOW_ATT)) {
             addMarkersForAttractions();
         }else if(state.equals(MAP_STATE_SELECT_LOC)){
-            clickForLocationSetup();
+            locationSelectorSetup();
+        }else if(state.equals(MAP_STATE_DIRECTIONS)){
+            directionsRequired = true;
+            setupDirections();
+            Log.d("AjQ","Directions required set to true");
+
         }
 
 
@@ -172,7 +198,7 @@ public class MapFragmentMain extends Fragment implements OnMapReadyCallback, Loc
 
     @Override
     public void locationUpdate(LatLng latLng) {
-        //TODO update map with user location
+
 
         currentLoc = latLng;
         if (mMapboxMap!=null){
@@ -190,8 +216,19 @@ public class MapFragmentMain extends Fragment implements OnMapReadyCallback, Loc
                 markerAnimator.setDuration(1000);
                 markerAnimator.start();
             }
-        }
 
+            if (directionsRequired){
+                try {
+                    Log.d("AjQ","Directions request being called");
+                    directionsRequest();
+                }catch (ServicesException e){
+                    e.printStackTrace();
+                    Toast.makeText(getContext(),"Unable to obtain directions",Toast.LENGTH_SHORT).show();
+                }
+                directionsRequired=false;
+            }
+
+        }
     }
 
     @Override
@@ -256,7 +293,7 @@ public class MapFragmentMain extends Fragment implements OnMapReadyCallback, Loc
 
     }
 
-    private void clickForLocationSetup(){
+    private void locationSelectorSetup(){
         mMapboxMap.setOnMapClickListener(new MapboxMap.OnMapClickListener() {
             @Override
             public void onMapClick(@NonNull LatLng point) {
@@ -300,6 +337,84 @@ public class MapFragmentMain extends Fragment implements OnMapReadyCallback, Loc
         }
         mMapboxMap.selectMarker(selectedLocation);
     }
+
+    private void directionsRequest() throws ServicesException{
+        final Position originPos = Position.fromCoordinates(currentLoc.getLongitude(),currentLoc.getLatitude());
+        final Position destinationPos = Position.fromCoordinates(destination.getPosition().getLongitude(),destination.getPosition().getLatitude());
+
+        MapboxDirections directionsClient = new MapboxDirections.Builder()
+                .setOrigin(originPos)
+                .setDestination(destinationPos)
+                .setAccessToken(getString(R.string.access_token))
+                .setProfile(DirectionsCriteria.PROFILE_WALKING)
+                .build();
+        directionsClient.enqueueCall(new Callback<DirectionsResponse>() {
+            @Override
+            public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+                if (response.body()==null){
+                    Log.e("AJQ","No directions contained in response, check token");
+                    return;
+
+                }else if (response.body().getRoutes().size()<1){
+                    Log.d("AJQ","No routes between 2 locations");
+                    return;
+                }
+                Log.d("AjQ","Size of routes; "+String.valueOf(response.body().getRoutes().size()));
+                LatLngBounds bounds = new LatLngBounds.Builder()
+                        .include(currentLoc)
+                        .include(new LatLng(destination.getPosition().getLatitude(),destination.getPosition().getLongitude()))
+                        .build();
+                route = response.body().getRoutes().get(0);
+                drawRoute(route, bounds);
+
+
+
+
+            }
+
+            @Override
+            public void onFailure(Call<DirectionsResponse> call, Throwable t) {
+                Log.e("Ajq","Directions request failure: " + t.getMessage());
+                Toast.makeText(getContext(),"Error: "+t.getMessage(),Toast.LENGTH_LONG).show();
+            }
+        });
+
+
+    }
+
+    private void drawRoute(DirectionsRoute dir,LatLngBounds bounds){
+        LineString lineString = LineString.fromPolyline(route.getGeometry(), Constants.OSRM_PRECISION_V5);
+        Log.d("AJQ","Route length: "+dir.getDistance() + " meters long");
+        List<Position> coords = lineString.getCoordinates();
+        LatLng[] points = new LatLng[coords.size()];
+        for (int i = 0; i<coords.size();i++){
+            points[i] = new LatLng(coords.get(i).getLatitude(),coords.get(i).getLongitude());
+        }
+        Log.d("AJQ","Size of latlng array "+points.length);
+
+        PolylineOptions polyOpts = new PolylineOptions()
+                .add(points)
+                .color(ContextCompat.getColor(getContext(),R.color.map_route))
+                .width(5);
+        mMapboxMap.addPolyline(polyOpts);
+        mMapboxMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds,200));
+
+
+    }
+
+
+    private void setupDirections(){
+        Attraction current = AttractionList.getInstance().getCurrentAttractionInScope();
+
+        String title = getString(R.string.map_directions_to)+current.getTitle();
+        instructionsText.setText(title);
+        instructionsText.setVisibility(View.VISIBLE);
+        MarkerOptions destinationOptions = new MarkerOptions().setPosition(new LatLng(current.getLat(),current.getLon()));
+        this.destination = mMapboxMap.addMarker(destinationOptions);
+
+    }
+
+
 
 
 

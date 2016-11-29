@@ -1,7 +1,9 @@
 package com.example.tonyquick.thequicklawsonguidetohaarlem.fragments;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,7 +12,9 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,9 +55,9 @@ import java.util.ArrayList;
 public class AttractionEditorFragment extends Fragment implements CheckBox.OnCheckedChangeListener {
 
     CheckBox isRestaurantCB, isBarCB, isCoffeeShopCB, isCafeCB, isThingToDoCB, isPhotoOpCB;
-    TextView imageText;
-    EditText attTitleEditTxt, attDescriptionEditTxt, latText, lonText;
-    Button submitBtn, findOnMapBtn, addImageBtn;
+    TextView imageText, latText, lonText;
+    EditText attTitleEditTxt, attDescriptionEditTxt;
+    Button submitBtn, findOnMapBtn, addImageBtn, deleteBtn;
     LinearLayout attributeHolder;
     View v;
 
@@ -79,6 +83,7 @@ public class AttractionEditorFragment extends Fragment implements CheckBox.OnChe
     public static final String STATE_ATTRACTION_EDITOR_CREATE = "CREATE";
     public static final String STATE_ATTRACTION_EDITOR_EDIT = "EDIT";
     public static final String STATE_ATTRACTION_EDITOR_SUGGESTION = "SUGGESTION";
+    public static final String STATE_ATTRACTION_EDITOR_MANAGE_SUGGESTIONS = "MANAGE SUGGESTIONS";
 
     private final int IMAGE_SELECTOR_REQ = 501;
 
@@ -120,6 +125,8 @@ public class AttractionEditorFragment extends Fragment implements CheckBox.OnChe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
+
         v = inflater.inflate(R.layout.fragment_create_attraction, container, false);
 
         TextView title = (TextView)v.findViewById(R.id.attraction_editor_title);
@@ -129,6 +136,9 @@ public class AttractionEditorFragment extends Fragment implements CheckBox.OnChe
                 break;
             case STATE_ATTRACTION_EDITOR_SUGGESTION:
                 title.setText(R.string.attraction_editor_title_suggestion);
+                break;
+            case STATE_ATTRACTION_EDITOR_MANAGE_SUGGESTIONS:
+                title.setText(R.string.verify_suggestion);
                 break;
         }
 
@@ -145,13 +155,32 @@ public class AttractionEditorFragment extends Fragment implements CheckBox.OnChe
 
         attTitleEditTxt = (EditText)v.findViewById(R.id.att_name_edit_text);
         attDescriptionEditTxt =(EditText)v.findViewById(R.id.att_description_edit_text);
-        latText = (EditText)v.findViewById(R.id.latitude_edit_text);
-        lonText = (EditText) v.findViewById(R.id.longitude_edit_text);
+        latText = (TextView)v.findViewById(R.id.latitude_edit_text);
+        lonText = (TextView) v.findViewById(R.id.longitude_edit_text);
 
 
 
         submitBtn = (Button)v.findViewById(R.id.submit_attraction_button);
         submitBtn.setOnClickListener(new submitListener());
+
+        deleteBtn = (Button)v.findViewById(R.id.delete_suggestion_button);
+        if (status.equals(STATE_ATTRACTION_EDITOR_MANAGE_SUGGESTIONS)){
+            deleteBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+                    alert.setMessage("Are you sure you wish to delete this suggestion?");
+                    alert.setPositiveButton("Yes",deleteRecord);
+                    alert.setNegativeButton("No",deleteRecord);
+                    alert.show();
+                }
+            });
+
+        }else{
+            deleteBtn.setVisibility(View.GONE);
+        }
+
+
 
 
         findOnMapBtn = (Button)v.findViewById(R.id.find_on_map_button);
@@ -228,7 +257,7 @@ public class AttractionEditorFragment extends Fragment implements CheckBox.OnChe
 
         setAllUnavailable();
 
-        if (status.equals(STATE_ATTRACTION_EDITOR_EDIT)){
+        if (status.equals(STATE_ATTRACTION_EDITOR_EDIT)||status.equals(STATE_ATTRACTION_EDITOR_MANAGE_SUGGESTIONS)){
             addDataFromRecord();
         }
 
@@ -435,6 +464,7 @@ public class AttractionEditorFragment extends Fragment implements CheckBox.OnChe
         if (latText.getText().toString().equals("")){
             Toast.makeText(getContext(),"Latitude cannot be empty",Toast.LENGTH_SHORT).show();
             latText.getParent().requestChildFocus(latText,latText);
+
         }
 
         if (lonText.getText().toString().equals("")){
@@ -573,6 +603,8 @@ public class AttractionEditorFragment extends Fragment implements CheckBox.OnChe
 
             }else if(status.equals(STATE_ATTRACTION_EDITOR_EDIT)){
                 temp.setId(current.getId());
+                temp.setPictureLocationSmall(current.getPictureLocationSmall());
+                temp.setPictureLocationLarge(current.getPictureLocationLarge());
                 FirebaseDatabase.getInstance().getReference().child(GetFirebaseData.ATTRACTIONS_REFERENCE).child(temp.getId()).setValue(temp);
                 Toast.makeText(getContext(), "Attraction successfully edited", Toast.LENGTH_LONG).show();
 
@@ -583,7 +615,19 @@ public class AttractionEditorFragment extends Fragment implements CheckBox.OnChe
                 temp.setId(newSuggestion.getKey());
                 newSuggestion.setValue(temp);
 
+            }else if(status.equals(STATE_ATTRACTION_EDITOR_MANAGE_SUGGESTIONS)){
+                temp.setId(current.getId());
+                temp.setPictureLocationSmall(current.getPictureLocationSmall());
+                temp.setPictureLocationLarge(current.getPictureLocationLarge());
+
+                FirebaseDatabase.getInstance().getReference().child(GetFirebaseData.ATTRACTIONS_REFERENCE)
+                        .child(temp.getId()).setValue(temp);
+                FirebaseDatabase.getInstance().getReference().child(GetFirebaseData.SUGGESTIONS_REFERENCE)
+                        .child(current.getId()).removeValue();
+
+                Toast.makeText(getContext(), "Suggestion successfully added", Toast.LENGTH_LONG).show();
             }
+
             if (pictureFileLoc!=null) {
                 UploadPictures marp = new UploadPictures(temp, pictureFileLoc,getContext());
                 marp.execute();
@@ -594,9 +638,20 @@ public class AttractionEditorFragment extends Fragment implements CheckBox.OnChe
         }
     }
 
+    Dialog.OnClickListener deleteRecord = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            switch (which){
+                case DialogInterface.BUTTON_POSITIVE:
+                    finishListener.deleteSuggestion(current);
+            }
+        }
+    };
+
     public interface AttractionEditorListener {
         void editorFinish();
         void getCoordsFromMap();
+        void deleteSuggestion(Attraction current);
 
 
     }

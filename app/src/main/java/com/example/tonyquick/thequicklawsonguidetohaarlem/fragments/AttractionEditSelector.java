@@ -10,6 +10,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,7 @@ public class AttractionEditSelector extends Fragment implements AttractionGeneri
     private static final String PARAM_STATE = "STATE";
     public static final String STATE_DELETE = "delete";
     public static final String STATE_EDIT = "edit";
+    public static final String STATE_SUGGESTIONS = "suggestions";
 
     private Attraction selected;
 
@@ -67,27 +69,39 @@ public class AttractionEditSelector extends Fragment implements AttractionGeneri
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_attraction_edit_selector, container, false);
+        final Context altContext = new ContextThemeWrapper(getContext(),R.style.AppAltTheme);
+        LayoutInflater altInflater = inflater.cloneInContext(altContext);
+
+        View v = altInflater.inflate(R.layout.fragment_attraction_edit_selector, container, false);
         TextView title = (TextView)v.findViewById(R.id.attraction_edit_selector_title);
+
+        ArrayList<Attraction>data;
+
+
         if (state.equals(STATE_DELETE)){
             title.setText("Select attraction for deletion");
             listener=this;
             deleteConfirmListener = (ConfirmDeleteListener)getActivity();
+            data = AttractionList.getInstance().getList();
 
+        }else if (state.equals(STATE_SUGGESTIONS)){
+            title.setText("Current Suggestions");
+            listener=(AttractionGenericAdapter.AttractionGenClickListener)getActivity();
+            data = AttractionList.getInstance().getSuggestions();
         }else{
             listener=(AttractionGenericAdapter.AttractionGenClickListener)getActivity();
-
+            data = AttractionList.getInstance().getList();
         }
 
 
-        ArrayList<Attraction> data = AttractionList.getInstance().getList();
+
         Log.d("Ajq",String.valueOf(data.size()));
 
         RecyclerView recycler = (RecyclerView)v.findViewById(R.id.recycler_attraction_generic);
 
         AttractionGenericAdapter adapter = new AttractionGenericAdapter(data,listener,getContext());
         recycler.setAdapter(adapter);
-        recycler.addItemDecoration(new SpacingDecorator(5,SpacingDecorator.SPACE_DECORATOR_ORIENTATION_VERTICAL));
+        recycler.addItemDecoration(new SpacingDecorator(6,SpacingDecorator.SPACE_DECORATOR_ORIENTATION_VERTICAL));
 
         LinearLayoutManager linMan = new LinearLayoutManager(getContext());
         linMan.setOrientation(LinearLayoutManager.VERTICAL);
@@ -115,10 +129,7 @@ public class AttractionEditSelector extends Fragment implements AttractionGeneri
             switch (which){
                 case DialogInterface.BUTTON_POSITIVE:
                     deleteConfirmListener.onDeleteConfirmed(selected);
-
-
             }
-
         }
     };
 

@@ -14,7 +14,7 @@ import com.example.tonyquick.thequicklawsonguidetohaarlem.activties.AdminActivit
 
 public class AdminMainMenuFragment extends Fragment {
 
-    Button createAttraction, editAttraction, deleteAttraction;
+    Button createAttraction, editAttraction, deleteAttraction, manageSuggestions;
     MenuButtonListener listener;
 
 
@@ -39,11 +39,13 @@ public class AdminMainMenuFragment extends Fragment {
         createAttraction = (Button)view.findViewById(R.id.create_attraction_button);
         editAttraction = (Button)view.findViewById(R.id.edit_attraction_button);
         deleteAttraction = (Button)view.findViewById(R.id.delete_attraction_button);
+        manageSuggestions = (Button)view.findViewById(R.id.manage_suggestions_button);
 
 
         createAttraction.setOnClickListener(new ButtonClickListener());
         editAttraction.setOnClickListener(new ButtonClickListener());
         deleteAttraction.setOnClickListener(new ButtonClickListener());
+        manageSuggestions.setOnClickListener(new ButtonClickListener());
 
         return view;
     }

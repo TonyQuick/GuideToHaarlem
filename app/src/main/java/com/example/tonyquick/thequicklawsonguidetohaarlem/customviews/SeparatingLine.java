@@ -40,6 +40,6 @@ public class SeparatingLine extends LinearLayout{
     }
 
     public void setColorWhite(){
-        line.setBackgroundResource(R.color.white_text);
+        line.setBackgroundResource(R.color.white_color);
     }
 }

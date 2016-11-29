@@ -1,6 +1,10 @@
 package com.example.tonyquick.thequicklawsonguidetohaarlem.activties;
 
 import android.Manifest;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -8,14 +12,18 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.example.tonyquick.thequicklawsonguidetohaarlem.R;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.adapters.AttractionAdapter;
@@ -30,6 +38,12 @@ import com.example.tonyquick.thequicklawsonguidetohaarlem.models.Attraction;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.models.MenuItem;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.services.AttractionList;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.services.GetFirebaseData;
+import com.example.tonyquick.thequicklawsonguidetohaarlem.utilities.MenuHandler;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -65,6 +79,13 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
     private ShowCategory showCategory;
     AttractionEditorFragment attractionEditorFragment;
 
+    private FirebaseAuth mAuth;
+    private FirebaseUser mUser;
+
+    private AuthListener authListener;
+
+    private MenuHandler menuHandler;
+
 
     private DisplayAttraction displayAttraction;
     private ArrayList<MenuItem> menuItems;
@@ -82,8 +103,13 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mAuth = FirebaseAuth.getInstance();
+        mUser = mAuth.getCurrentUser();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -106,37 +132,6 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
 
         list = AttractionList.getInstance();
 
-        Attraction att1 = new Attraction.AttractionBuilder("Jopenkerk",52.3798,4.6357,"Old Church transformed into a restaurant/brewery. Excellent food and beer in a lively atmosphere.")
-            .addRestaurant("General/ Dutch","Casual",null,"Both","€15", new ArrayList<String>(Arrays.asList("Veal steak","IPA")))
-            .getAttraction();
-
-
-/*
-
-        Attraction att2 = new Attraction.AttractionBuilder("Juboraj",60.0,4.6,"Decent curry house")
-                .addRestaurant("Indian","Casual",null,"Sit down",null,null)
-                .getAttraction();
-
-
-        Attraction att3 = new Attraction.AttractionBuilder("Pizza Express",52.3763,4.6322,"")
-                .addRestaurant("Italian",null,null,"Quick Eat",null,null)
-                .getAttraction();
-
-
-
-        Attraction att4= new Attraction.AttractionBuilder("McDonalds",50,25.0,"")
-                .addRestaurant("American",null,null,"Takeaway","€5",null)
-                .getAttraction();
-
-
-        list.addAttraction(att1);
-        list.addAttraction(att2);
-        list.addAttraction(att3);
-        list.addAttraction(att4);*/
-        Log.d("AJQ"," "+list.getSize());
-        if (list.getSize()==0) {
-            GetFirebaseData hype = new GetFirebaseData();
-        }
 
         mDatabase = FirebaseDatabase.getInstance();
         mDbReference = mDatabase.getReference();
@@ -159,6 +154,23 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        authListener = new AuthListener();
+        mAuth.addAuthStateListener(new AuthListener());
+
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (authListener!=null) {
+            mAuth.removeAuthStateListener(authListener);
+        }
+    }
+
+    @Override
     public void menuItemClicked(MenuItem i) {
         currentState = i.getTitle();
         showCategory = ShowCategory.newInstance(i.getTitle());
@@ -168,7 +180,6 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
         fragTrans.replace(R.id.main_frame,showCategory,"showCat");
         fragTrans.setCustomAnimations(R.anim.fade_in,R.anim.fade_out);
 
-        Log.d("AJQ","here");
 
     }
 
@@ -272,10 +283,13 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
     @Override
     public void getCoordsFromMap() {
         mapFrag = MapFragmentMain.newInstance(null,MapFragmentMain.MAP_STATE_SELECT_LOC);
-        fragMan.beginTransaction().replace(R.id.admin_content_frame,mapFrag).addToBackStack("editor").commit();
+        fragMan.beginTransaction().replace(R.id.main_frame,mapFrag).addToBackStack("editor").commit();
     }
 
+    @Override
+    public void deleteSuggestion(Attraction current) {
 
+    }
 
 
     @Override
@@ -305,8 +319,18 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.options, menu);
+
+        menuHandler = new MenuHandler(menu,getMenuInflater());
+
+        if (mUser!=null){
+            menuHandler.hideOption(R.id.action_login);
+        }else{
+            menuHandler.hideOption(R.id.action_admin_access);
+            menuHandler.hideOption(R.id.action_logout);
+        }
+
+
+
         return true;
     }
 
@@ -321,18 +345,110 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_admin_access) {
-            //TODO login stuff with username and password, move below to response from login request
 
-            Intent i = new Intent(this, AdminActivity.class);
-            startActivity(i);
-            
+        switch (id) {
+            case R.id.action_admin_access:
 
-            return true;
+                if (mUser != null) {
+                    Intent i = new Intent(this, AdminActivity.class);
+                    startActivity(i);
+                } else {
+
+                    LoginDialogFrag loginFrag = new LoginDialogFrag();
+                    loginFrag.show(getFragmentManager(), null);
+
+                }
+                break;
+
+
+            case R.id.action_logout:
+                mAuth.signOut();
+                menuHandler.showOption(R.id.action_login);
+                menuHandler.hideOption(R.id.action_logout);
+                menuHandler.hideOption(R.id.action_admin_access);
+                break;
+
+
+            case R.id.action_login:
+                LoginDialogFrag loginFrag = new LoginDialogFrag();
+                loginFrag.show(getFragmentManager(), null);
+                break;
+
         }
+
+
+
+
 
         return super.onOptionsItemSelected(item);
     }
+
+
+    class AuthListener implements FirebaseAuth.AuthStateListener {
+        @Override
+        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            mUser = firebaseAuth.getCurrentUser();
+
+        }
+    }
+
+    public class LoginDialogFrag extends DialogFragment{
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+
+            // Inflate and set the layout for the dialog
+            // Pass null as the parent view because its going in the dialog layout
+            builder.setView(inflater.inflate(R.layout.login_form, null));
+            builder.setPositiveButton("Confirm",new DialogClick());
+            builder.setNegativeButton("Cancel",null);
+
+            return builder.create();
+
+        }
+
+        private class DialogClick implements Dialog.OnClickListener{
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                EditText usernameEditText = (EditText)((AlertDialog) dialog).findViewById(R.id.username_edittext);
+                EditText passwordEditText = (EditText)((AlertDialog) dialog).findViewById(R.id.password_edittext);
+
+                String username = usernameEditText.getText().toString();
+                username = username.trim();
+                String password = passwordEditText.getText().toString();
+
+                if (username.equals("")){
+                    Toast.makeText(getContext(),"Username cannot be empty",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (password.equals("")){
+                    Toast.makeText(getContext(),"Password cannot be empty",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                mAuth.signInWithEmailAndPassword(username,password).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()){
+                            menuHandler.showOption(R.id.action_logout);
+                            menuHandler.hideOption(R.id.action_login);
+                            menuHandler.showOption(R.id.action_admin_access);
+                        }else{
+                            Toast.makeText(getApplicationContext(),"Login failed. Please check credentials",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+
+
+
+            }
+        }
+
+    }
+
 
 
 

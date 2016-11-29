@@ -66,7 +66,7 @@ public class DisplayAttraction extends Fragment {
         title.setText(currentAtt.getTitle());
 
 
-        ViewBuilders viewBuilder = new ViewBuilders(getContext(),inflater);
+        ViewBuilders viewBuilder = new ViewBuilders(altContext,altInflater);
         mainContent = viewBuilder.attractionCardContentBuilder(currentState, currentAtt,mainContent);
 
 

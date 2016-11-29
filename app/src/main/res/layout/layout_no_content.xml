@@ -10,7 +10,7 @@
         android:id="@+id/textView"
         android:gravity="center"
         android:textSize="18sp"
-        android:textColor="@color/white_text"
+        android:textColor="@color/white_color"
         android:layout_marginTop="20dp"/>
     <TextView
         android:text="Please check internet connection"
@@ -19,7 +19,7 @@
         android:id="@+id/textVie"
         android:gravity="center"
         android:textSize="18sp"
-        android:textColor="@color/white_text"
+        android:textColor="@color/white_color"
 
 
         />

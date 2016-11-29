@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/attraction_editor_title"
-            android:text="Create attraction"
+            android:text="@string/attraction_editor_title_create"
             android:gravity="center"
             android:layout_marginBottom="5dp"
             android:textSize="18sp"/>
@@ -29,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:hint="Search for attraction"
+            android:hint="@string/attraction_editor_search_google"
             android:id="@+id/search_bar"
             android:layout_marginBottom="5dp"/>
 
@@ -37,7 +37,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:text="Name*"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:text="@string/name"
             android:textStyle="normal|bold"
             />
 
@@ -48,32 +50,34 @@
             android:imeOptions="actionNext"
             android:inputType="text"
             android:layout_marginBottom="20dp"
-            android:background="@color/edittext_background"
-            android:alpha="0.2"/>
+            android:background="@color/edittext_background_low_alpha"
+            />
 
-        <include layout="@layout/separating_line"></include>
+        <include layout="@layout/separating_line_white"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="10"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             >
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Location*"
+                android:text="@string/attraction_editor_location"
                 android:layout_weight="7"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
                 android:textStyle="normal|bold" />
 
             <Button
                 android:layout_width="0dp"
-                android:layout_height="30dp"
+                android:layout_height="40dp"
                 android:id="@+id/find_on_map_button"
-                android:text="Find on Map"
-                android:textSize="10sp"
+                android:text="@string/attraction_editor_map_button"
+                android:textSize="12sp"
                 android:layout_weight="3"/>
 
         </LinearLayout>
@@ -83,40 +87,42 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="4"
+            android:weightSum="3"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="15dp">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Latitude:"
+                android:text="@string/attraction_editor_coords"
+                android:paddingStart="5dp"
+                android:paddingLeft="5dp"
                 android:layout_weight="1"/>
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:inputType="numberDecimal"
-                android:imeOptions="actionNext"
-                android:id="@+id/latitude_edit_text"
-                android:textSize="10sp"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Longitude:"
                 android:layout_weight="1"
-                android:id="@+id/long_label"/>
+                android:id="@+id/latitude_edit_text"
+                android:textSize="10sp"
+                android:background="@color/edittext_background_low_alpha"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"/>
 
-            <EditText
+
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:inputType="numberDecimal"
-                android:imeOptions="actionNext"
                 android:id="@+id/longitude_edit_text"
-                android:textSize="10sp"/>
+                android:textSize="10sp"
+                android:background="@color/edittext_background_low_alpha"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"/>
 
         </LinearLayout>
 
@@ -126,9 +132,9 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Description*"
+            android:text="@string/attraction_editor_description"
             android:layout_marginBottom="5dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:id="@+id/textView2"
             android:textStyle="normal|bold" />
 
@@ -136,22 +142,22 @@
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:id="@+id/att_description_edit_text"
-            android:hint="Enter attraction description"
+            android:hint="@string/attraction_editor_description_prompt"
             android:gravity="start"
             android:textSize="15sp"
             android:inputType="text"
             android:imeOptions="actionNext"
             android:layout_marginBottom="20dp"
-            android:background="@color/edittext_background"
-            android:alpha="0.2"/>
+            android:background="@color/edittext_background_low_alpha"
+/>
 
         <include layout="@layout/separating_line_white"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Image"
-            android:layout_marginTop="20dp"/>
+            android:text="@string/attraction_editor_image"
+            android:layout_marginTop="10dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -175,20 +181,21 @@
                 android:layout_width="0dp"
                 android:layout_height="40dp"
                 android:id="@+id/add_image_button"
-                android:text="Add Image"
-                android:textSize="10sp"
+                android:text="@string/attraction_editor_image_button"
+                android:textSize="12sp"
                 android:layout_weight="3"
                 />
 
         </LinearLayout>
 
 
-        <include layout="@layout/separating_line"></include>
+        <include layout="@layout/separating_line_white"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Select attraction types:"/>
+            android:text="@string/attraction_editor_type_selection_title"
+            android:layout_marginTop="5dp"/>
 
         <GridLayout
             android:layout_width="match_parent"
@@ -199,33 +206,37 @@
             android:layout_marginBottom="15dp"
             >
 
-            <CheckBox
+            <android.support.v7.widget.AppCompatCheckBox
                 android:id="@+id/restaurant_checkbox"
-                android:text="Restaurant"
+                android:text="@string/menu_type_restaurant"
+                android:buttonTint="@color/white_color"
                 />
-            <CheckBox
+            <android.support.v7.widget.AppCompatCheckBox
                 android:id="@+id/bar_checkbox"
-                android:text="Bar"
-                android:layout_marginStart="50dp"
-                android:layout_marginLeft="50dp"/>
-            <CheckBox
-                android:id="@+id/cafe_checkbox"
-                android:text="Cafe" />
-            <CheckBox
-                android:id="@+id/coffee_shop_checkbox"
-                android:text="Coffee Shop"
-                android:layout_marginStart="50dp"
-                android:layout_marginLeft="50dp"/>
-            <CheckBox
-                android:id="@+id/thing_to_do_checkbox"
-                android:text="Thing to do"
-                />
-            <CheckBox
-                android:id="@+id/photo_op_checkbox"
-                android:text="Photo Opportunity"
+                android:text="@string/menu_item_bar"
                 android:layout_marginStart="50dp"
                 android:layout_marginLeft="50dp"
-                />
+                android:buttonTint="@color/white_color"/>
+            <android.support.v7.widget.AppCompatCheckBox
+                android:id="@+id/cafe_checkbox"
+                android:text="@string/menu_item_cafe"
+                android:buttonTint="@color/white_color"/>
+            <android.support.v7.widget.AppCompatCheckBox
+                android:id="@+id/coffee_shop_checkbox"
+                android:text="@string/menu_item_coffee_shop"
+                android:layout_marginStart="50dp"
+                android:layout_marginLeft="50dp"
+                android:buttonTint="@color/white_color"/>
+            <android.support.v7.widget.AppCompatCheckBox
+                android:id="@+id/thing_to_do_checkbox"
+                android:text="@string/menu_item_thing_to_do"
+                android:buttonTint="@color/white_color"/>
+            <android.support.v7.widget.AppCompatCheckBox
+                android:id="@+id/photo_op_checkbox"
+                android:text="@string/menu_item_photo_op"
+                android:layout_marginStart="50dp"
+                android:layout_marginLeft="50dp"
+                android:buttonTint="@color/white_color"/>
 
         </GridLayout>
 
@@ -237,11 +248,24 @@
 
         </LinearLayout>
 
+
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:id="@+id/delete_suggestion_button"
+            android:text="@string/attraction_editor_delete_button"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"/>
+
         <Button
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:id="@+id/submit_attraction_button"
-            android:text="Submit"
+            android:text="@string/attraction_editor_submit_button"
             android:layout_margin="20dp"/>
 
 

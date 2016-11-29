@@ -1,5 +1,6 @@
 package com.example.tonyquick.thequicklawsonguidetohaarlem.services;
 
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
 import com.example.tonyquick.thequicklawsonguidetohaarlem.models.Attraction;
@@ -19,28 +20,37 @@ import java.util.ArrayList;
 
 public class GetFirebaseData {
 
-    DataChangedCallback changeListener;
+    FirebaseDataHandlerInterface listener;
+    DatabaseReference attractions;
+    DatabaseReference suggestions;
+
     public static final String ATTRACTIONS_REFERENCE = "Attractions";
     public static final String SUGGESTIONS_REFERENCE = "Suggestions";
 
 
 
-    public GetFirebaseData(){
+    GetFirebaseData(FirebaseDataHandlerInterface listener){
+        this.listener=listener;
 
 
+    }
+
+   /* public void getDataset(){
         FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
         DatabaseReference dbRef = mDatabase.getReference();
 
-        ValueEventListener listener = new ValueEventListener() {
+        final ValueEventListener valListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                ArrayList<Attraction> awway = new ArrayList<>();
+                ArrayList<Attraction> dataset = new ArrayList<>();
                 for (DataSnapshot child: dataSnapshot.getChildren()){
                     Log.d("AJQ",child.toString());
-                    AttractionList.getInstance().addAttraction(child.getValue(Attraction.class));
+                    dataset.add(child.getValue(Attraction.class));
+
                 }
 
-                Log.d("AJQ",""+awway.size());
+                listener.initialDataset(dataset);
+
             }
 
             @Override
@@ -49,9 +59,79 @@ public class GetFirebaseData {
             }
         };
 
-        dbRef.child("Attractions").addListenerForSingleValueEvent(listener);
+        dbRef.child(ATTRACTIONS_REFERENCE).addListenerForSingleValueEvent(valListener);
+
+    }*/
+
+    void addChangeListener(){
+        attractions = FirebaseDatabase.getInstance().getReference().child(ATTRACTIONS_REFERENCE);
+        final ChildEventListener changeListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                listener.childAdded(dataSnapshot.getValue(Attraction.class));
+                Log.d("Ajq","Child has been added");
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                listener.childChanged(dataSnapshot.getValue(Attraction.class));
+                Log.d("Ajq","Child has been changed");
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                listener.childRemoved(dataSnapshot.getKey());
+                Log.d("AJQ child removed","snapshot is: " + dataSnapshot.toString());
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        attractions.addChildEventListener(changeListener);
+
+    }
 
 
+    void addChangeListenerSuggestions(){
+        suggestions = FirebaseDatabase.getInstance().getReference().child(SUGGESTIONS_REFERENCE);
+        final ChildEventListener changeListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                listener.suggestionAdded(dataSnapshot.getValue(Attraction.class));
+                Log.d("Ajq","Child has been added");
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                listener.suggestionRemoved(dataSnapshot.getKey());
+                Log.d("AJQ child removed","snapshot is: " + dataSnapshot.toString());
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        suggestions.addChildEventListener(changeListener);
 
     }
 
@@ -60,8 +140,15 @@ public class GetFirebaseData {
 
 
 
-    public interface DataChangedCallback{
-        void onFireBaseDataChanged();
+
+    interface FirebaseDataHandlerInterface{
+        void childAdded(Attraction a);
+        void childChanged(Attraction a);
+        void childRemoved(String id);
+
+        void suggestionAdded(Attraction a);
+        void suggestionRemoved(String id);
+
 
     }
 

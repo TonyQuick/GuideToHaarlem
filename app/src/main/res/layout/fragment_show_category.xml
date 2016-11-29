@@ -22,7 +22,7 @@
             android:layout_marginLeft="40dp"
             android:layout_marginTop="8dp"
             android:id="@+id/title_text"
-            android:textColor="@color/white_text"
+            android:textColor="@color/white_color"
             android:textSize="22sp"/>
 
         <Button
@@ -35,7 +35,7 @@
             android:layout_marginEnd="5dp"
             android:layout_marginTop="5dp"
             android:id="@+id/make_suggestion_button"
-            android:textColor="@color/white_text"
+            android:textColor="@color/white_color"
             android:background="@drawable/background_transparent_white_outline_rounded_corners"
             android:textSize="12sp"/>
 
@@ -78,7 +78,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/order_by"
-                android:textColor="@color/white_text"
+                android:textColor="@color/white_color"
                 />
             <RadioGroup
                 android:layout_width="wrap_content"
@@ -92,7 +92,7 @@
                     android:id="@+id/alphabetically_radio"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
-                    android:textColor="@color/white_text"
+                    android:textColor="@color/white_color"
                     android:checked="true"
                     />
 
@@ -103,7 +103,7 @@
                     android:id="@+id/by_distance_radio"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
-                    android:textColor="@color/white_text"
+                    android:textColor="@color/white_color"
                     android:enabled="false"
                     android:nestedScrollingEnabled="false" />
 
@@ -136,7 +136,7 @@
                 android:paddingLeft="10dp"
                 android:layout_weight="1"
                 android:paddingRight="5dp"
-                android:textColor="@color/white_text"
+                android:textColor="@color/white_color"
  />
 
             <Button
@@ -155,7 +155,7 @@
                 android:id="@+id/refresh_button"
                 android:paddingRight="5dp"
                 android:paddingEnd="5dp"
-                android:textColor="@color/white_text"
+                android:textColor="@color/white_color"
                 android:background="@drawable/background_transparent_white_outline_rounded_corners" />
 
 

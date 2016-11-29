@@ -44,7 +44,7 @@
                 android:id="@+id/suggestion_edit_text"
                 android:imeOptions="actionDone"
                 android:hint="Enter suggestion here"
-                android:background="@color/edittext_background"/>
+                android:background="@color/edittext_background_low_alpha"/>
         </LinearLayout>
 
         <LinearLayout

@@ -62,4 +62,28 @@
     <string name="card_order_suggestions">Order Suggestions</string>
 
 
+
+    <string name="password_prompt">Password</string>
+    <string name="username_prompt">Email</string>
+
+
+    <string name="menu_login">Login</string>
+    <string name="menu_logout">Logout</string>
+    <string name="name">Name*</string>
+    <string name="attraction_editor_search_google">Search for attraction</string>
+    <string name="attraction_editor_title_create">Create attraction</string>
+    <string name="attraction_editor_location">Location*</string>
+    <string name="attraction_editor_map_button">Find on Map</string>
+    <string name="attraction_editor_coords">Coordinates</string>
+    <string name="attraction_editor_description">Description*</string>
+    <string name="attraction_editor_description_prompt">Enter attraction description</string>
+    <string name="attraction_editor_image">Image</string>
+    <string name="attraction_editor_image_button">Add Image</string>
+    <string name="attraction_editor_type_selection_title">Select attraction types:</string>
+    <string name="attraction_editor_submit_button">Submit</string>
+    <string name="attraction_editor_delete_button">Delete Suggestion</string>
+    <string name="verify_suggestion">Verify Suggestion</string>
+    <string name="map_directions_to">"Directions to: "</string>
+
+
 </resources>

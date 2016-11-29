@@ -23,6 +23,7 @@ import com.example.tonyquick.thequicklawsonguidetohaarlem.fragments.ShowCategory
 import com.example.tonyquick.thequicklawsonguidetohaarlem.interfaces.PermissionsHandler;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.models.Attraction;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.services.AttractionList;
+import com.example.tonyquick.thequicklawsonguidetohaarlem.services.GetFirebaseData;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -43,6 +44,8 @@ public class AdminActivity extends AppCompatActivity implements AdminMainMenuFra
     AttractionEditSelector attractionEditSelector;
     MapFragmentMain mapFragmentMain;
 
+    String editSelectorStatus;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +54,7 @@ public class AdminActivity extends AppCompatActivity implements AdminMainMenuFra
         ActionBar ab = getSupportActionBar();
         //ab.setDisplayHomeAsUpEnabled(true);
 
+        AttractionList.getInstance().populateSuggestions();
 
         fragMan = this.getSupportFragmentManager();
         AdminMainMenuFragment adminFrag = (AdminMainMenuFragment)fragMan.findFragmentById(R.id.admin_content_frame);
@@ -74,13 +78,20 @@ public class AdminActivity extends AppCompatActivity implements AdminMainMenuFra
                 break;
 
             case (R.id.edit_attraction_button):
-                attractionEditSelector = AttractionEditSelector.newInstance(AttractionEditSelector.STATE_EDIT);
+                editSelectorStatus = AttractionEditSelector.STATE_EDIT;
+                attractionEditSelector = AttractionEditSelector.newInstance(editSelectorStatus);
                 fragMan.beginTransaction().replace(R.id.admin_content_frame,attractionEditSelector).addToBackStack("menu").commit();
                 break;
 
 
             case (R.id.delete_attraction_button):
                 attractionEditSelector = AttractionEditSelector.newInstance(AttractionEditSelector.STATE_DELETE);
+                fragMan.beginTransaction().replace(R.id.admin_content_frame,attractionEditSelector).addToBackStack("menu").commit();
+                break;
+
+            case (R.id.manage_suggestions_button):
+                editSelectorStatus = AttractionEditSelector.STATE_SUGGESTIONS;
+                attractionEditSelector = AttractionEditSelector.newInstance(editSelectorStatus);
                 fragMan.beginTransaction().replace(R.id.admin_content_frame,attractionEditSelector).addToBackStack("menu").commit();
                 break;
         }
@@ -100,13 +111,31 @@ public class AdminActivity extends AppCompatActivity implements AdminMainMenuFra
         fragMan.beginTransaction().replace(R.id.admin_content_frame,mapFragmentMain).addToBackStack("editor").commit();
     }
 
+    @Override
+    public void deleteSuggestion(Attraction a) {
+        fragMan.popBackStack();
+        final Attraction att = a;
+        final DatabaseReference suggestionsRef = FirebaseDatabase.getInstance().getReference().child(GetFirebaseData.SUGGESTIONS_REFERENCE);
+        DatabaseReference deleteRef = suggestionsRef.child(a.getId());
+        deleteRef.removeValue();
+        Snackbar.make(findViewById(R.id.relative_layout_admin),"Suggestion has been deleted",Snackbar.LENGTH_LONG).setAction("Undo", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                suggestionsRef.child(att.getId()).setValue(att);
+            }
+        }).show();
+    }
 
 
     @Override
     public void onAttractionGenClicked(Attraction a) {
         AttractionList.getInstance().setCurrentAttractionInScope(a);
         fragMan.popBackStack();
-        attractionEditorFragment = AttractionEditorFragment.newInstance(AttractionEditorFragment.STATE_ATTRACTION_EDITOR_EDIT,null);
+        if (editSelectorStatus.equals(AttractionEditSelector.STATE_EDIT)) {
+            attractionEditorFragment = AttractionEditorFragment.newInstance(AttractionEditorFragment.STATE_ATTRACTION_EDITOR_EDIT, null);
+        }else{
+            attractionEditorFragment = AttractionEditorFragment.newInstance(AttractionEditorFragment.STATE_ATTRACTION_EDITOR_MANAGE_SUGGESTIONS,null);
+        }
         fragMan.beginTransaction().replace(R.id.admin_content_frame, attractionEditorFragment).addToBackStack("menu").commit();
     }
 
