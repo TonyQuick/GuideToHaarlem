@@ -62,7 +62,6 @@
     <string name="card_order_suggestions">Order Suggestions</string>
 
 
-
     <string name="password_prompt">Password</string>
     <string name="username_prompt">Email</string>
 
@@ -84,6 +83,23 @@
     <string name="attraction_editor_delete_button">Delete Suggestion</string>
     <string name="verify_suggestion">Verify Suggestion</string>
     <string name="map_directions_to">"Directions to: "</string>
+
+    <string name="getting_around_title"><b>Getting Around</b></string>
+    <string name="getting_around_initial_description">Exploring the Netherlands is very simple; it\'s a very small country and features one of the most robust public transport networks in the world and is also incredibly bicycle friendly.</string>
+    <string name="getting_around_public_transport_title">Public Transport</string>
+    <string name="getting_around_public_transport">The Public transport network in the Netherlands is extensive featuring trains as the primary intercity travel links, with buses and trams providing most intracity travel. For most tourists the network starts at Schipol airport, there are both bus and train links to a number of surrounding cities.</string>
+    <string name="getting_around_9292_app">To help find your way around, we strongly recommend the 9292 route planner app. Given 2 locations, the app will suggest routes between them that utilise the full transport network to find the quickest routes.</string>
+    <string name="getting_around_9292_link"><u>Click here for more information.</u></string>
+    <string name="getting_around_intracity_title">Local Travel</string>
+    <string name="getting_around_intracity">There are a number of options for travelling within cities. The bus, metro and tram network is operated GVB and so a OV-chipcard can be purchased and used on all transport links for long stays. Single use tickets are also available, these can be purchased for hour long or daily periods. Visitors should also note that often payment via Visa cards isn\'t possible, so carrying cash is recommended.</string>
+    <string name="getting_around_cycling_title">Cycling</string>
+    <string name="getting_around_cycling">The Netherlands is also very bicycle friendly with cycle lanes on almost all roads.</string>
+    <string name="getting_around_hyperlink_bike_rental"><a href="http://www.holland-cycling.com/tips-and-info/services/bicycle-rental">There are a number of bike rental options, more information can be found here.</a></string>
+
+    <string name="title_activity_album">AlbumActivity</string>
+    <string name="image_enter_title">Enter Title</string>
+    <string name="add_image">Select Image to Upload</string>
+    <string name="title_activity_main2">Main2Activity</string>
 
 
 </resources>

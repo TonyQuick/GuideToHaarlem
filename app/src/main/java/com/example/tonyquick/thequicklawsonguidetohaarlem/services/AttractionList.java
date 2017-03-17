@@ -3,20 +3,25 @@ package com.example.tonyquick.thequicklawsonguidetohaarlem.services;
 import android.util.Log;
 
 import com.example.tonyquick.thequicklawsonguidetohaarlem.activties.MainActivity;
+import com.example.tonyquick.thequicklawsonguidetohaarlem.models.AlbumItem;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.models.Attraction;
 
 import java.util.ArrayList;
 
 /**
  * Created by Tony Quick on 23/10/2016.
+ *
+ * Class to store data used by app
  */
 
 public class AttractionList implements GetFirebaseData.FirebaseDataHandlerInterface {
 
     private ArrayList<Attraction> attractions, suggestions;
+    private ArrayList<AlbumItem> cats, albumImages;
     private static AttractionList sInstance;
     private Attraction currentAttractionInScope;
     private GetFirebaseData serverHandler;
+
 
 
 
@@ -32,8 +37,11 @@ public class AttractionList implements GetFirebaseData.FirebaseDataHandlerInterf
 
     private AttractionList(){
         attractions = new ArrayList<>();
+        albumImages = new ArrayList<>();
         serverHandler = new GetFirebaseData(this);
-        serverHandler.addChangeListener();
+        serverHandler.addChangeListenerAttractions();
+        serverHandler.addChangeListenerAlbum();
+        //get data from server for locations, also handles any changes at runtime
     }
 
 
@@ -54,6 +62,8 @@ public class AttractionList implements GetFirebaseData.FirebaseDataHandlerInterf
         attractions.add(att);
     }
 
+
+    //return sublist of data based on type of attraction passed as argument
     public ArrayList<Attraction> subList(String attractionType) {
 
         ArrayList<Attraction> tempList = new ArrayList<>();
@@ -77,19 +87,19 @@ public class AttractionList implements GetFirebaseData.FirebaseDataHandlerInterf
                     }
                     break;
 
-                case "Coffee Shops":
+                case MainActivity.STATE_COFFEE_SHOPS:
                     if (attraction.isCoffeeShop()) {
                         tempList.add(attraction);
                     }
                     break;
 
-                case "Photo Opportunities":
+                case MainActivity.STATE_PHOTO_OPPORTUNITIES:
                     if (attraction.isPhotoOpportunity()) {
                         tempList.add(attraction);
                     }
                     break;
 
-                case "Things to do":
+                case MainActivity.STATE_THINGS_TO_DO:
                     if (attraction.isThingToDo()) {
                         tempList.add(attraction);
                     }
@@ -102,6 +112,7 @@ public class AttractionList implements GetFirebaseData.FirebaseDataHandlerInterf
 
 
 
+    //used as temporary store for current attraction being examined by user
 
     public Attraction getCurrentAttractionInScope() {
         return currentAttractionInScope;
@@ -111,7 +122,23 @@ public class AttractionList implements GetFirebaseData.FirebaseDataHandlerInterf
         this.currentAttractionInScope = currentAttractionInScope;
     }
 
+    public void populateSuggestions(){
+        suggestions = new ArrayList<>();
+        serverHandler.addChangeListenerSuggestions();
+    }
 
+    public ArrayList<Attraction> getSuggestions(){
+        return suggestions;
+    }
+
+
+    public ArrayList<AlbumItem> getAlbumImages() {
+        return albumImages;
+    }
+
+
+    //callback methods from GetFirebaseData
+    //handle data being added, delete or modified
 
     @Override
     public void childAdded(Attraction a) {
@@ -124,6 +151,7 @@ public class AttractionList implements GetFirebaseData.FirebaseDataHandlerInterf
         for (int i=0;i<attractions.size(); i++){
             if (attractions.get(i).getId().equals(a.getId())){
                 attractions.set(i,a);
+                break;
             }
         }
     }
@@ -137,9 +165,6 @@ public class AttractionList implements GetFirebaseData.FirebaseDataHandlerInterf
             }
         }
     }
-
-
-
 
     @Override
     public void suggestionAdded(Attraction a) {
@@ -156,14 +181,24 @@ public class AttractionList implements GetFirebaseData.FirebaseDataHandlerInterf
         }
     }
 
-    public void populateSuggestions(){
-        suggestions = new ArrayList<>();
-        serverHandler.addChangeListenerSuggestions();
+
+    @Override
+    public void albumItemAdded(AlbumItem a) {
+        albumImages.add(a);
     }
 
-    public ArrayList<Attraction> getSuggestions(){
-        return suggestions;
+    @Override
+    public void albumItemRemoved(String id) {
+        for (AlbumItem a:albumImages){
+            if(a.getId().equals(id)){
+                albumImages.remove(a);
+                return;
+            }
+        }
+
     }
+
 
 
 }
+

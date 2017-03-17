@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +42,7 @@ public class ShowCategory extends Fragment implements LocationService.LocationSe
     private static final String ARG_DATA_TO_DISPLAY = "to display";
     private String typeToDisplay;
     private FrameLayout contentHolder;
-    private View contentInHolder;
+    private View recyclerHolder, noContentHolder;
     private RecyclerView recyclerView;
     private Boolean hasData = false;
     private LayoutInflater inflater;
@@ -71,8 +70,8 @@ public class ShowCategory extends Fragment implements LocationService.LocationSe
 
     public ShowCategory() {
         // Required empty public constructor
-        typeToDisplay = MainActivity.STATE_BARS;
     }
+
 
     public static ShowCategory newInstance(String typeToDisplay) {
         ShowCategory fragment = new ShowCategory();
@@ -89,8 +88,6 @@ public class ShowCategory extends Fragment implements LocationService.LocationSe
             typeToDisplay = getArguments().getString(ARG_DATA_TO_DISPLAY);
 
         }
-
-
 
     }
 
@@ -143,6 +140,7 @@ public class ShowCategory extends Fragment implements LocationService.LocationSe
         return v;
     }
 
+    //on attach check that host activity implements interface
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -161,20 +159,28 @@ public class ShowCategory extends Fragment implements LocationService.LocationSe
         currentDataState = STATE_NO_DATA;
     }
 
+    //initial view loader
     private void setupContentView(){
 
-
+        //if no data exists, load placeholder layout
         if (workingDataset.size()==0){
-            contentInHolder = inflater.inflate(R.layout.layout_no_content,null);
-            contentHolder.addView(contentInHolder);
+            noContentHolder = inflater.inflate(R.layout.layout_no_content,null);
+            contentHolder.addView(noContentHolder);
             currentDataState = STATE_NO_DATA;
 
-
+        //if data exists load recycler view using dataset and add to view
         }else{
             hasData = true;
-            contentInHolder = getActivity().getLayoutInflater().inflate(R.layout.recycler_view_general,null);
-            recyclerView = (RecyclerView)contentInHolder.findViewById(R.id.recycler_general);
-            contentHolder.addView(contentInHolder);
+
+            if(noContentHolder!=null){
+                if (noContentHolder.getParent()==contentHolder){
+                    contentHolder.removeView(noContentHolder);
+                }
+            }
+
+            recyclerHolder = getActivity().getLayoutInflater().inflate(R.layout.recycler_view_general,contentHolder,false);
+            contentHolder.addView(recyclerHolder);
+            recyclerView = (RecyclerView) recyclerHolder.findViewById(R.id.recycler_general);
 
             adapter = new AttractionAdapter(workingDataset,((MainActivity)getActivity()),typeToDisplay);
             recyclerView.setAdapter(adapter);
@@ -188,11 +194,19 @@ public class ShowCategory extends Fragment implements LocationService.LocationSe
 
     }
 
+    //reload dataset from shared list
+
     public void refreshDataset(){
         workingDataset = AttractionList.getInstance().subList(typeToDisplay);
         refreshInterface();
 
     }
+
+    /**
+     * pair of methods to update card items in recycler view
+     * refreshInterface reloads the recyclerview and notifies of the changed dataset
+     * updateInterfaceItems updates each item in recycler view and refreshes individually
+     */
 
 
     public void refreshInterface(){
@@ -200,9 +214,11 @@ public class ShowCategory extends Fragment implements LocationService.LocationSe
         if (workingDataset.size()>1) {
             workingDataset = Sorters.sort(workingDataset, currentSortState);
         }
+        //if this is being called for first time
         if (currentDataState.equals(STATE_NO_DATA)) {
             setupContentView();
         }
+        //else update recyclerview
         else{
             adapter.updateDataset(workingDataset);
             adapter.notifyDataSetChanged();
@@ -217,21 +233,22 @@ public class ShowCategory extends Fragment implements LocationService.LocationSe
         }
     }
 
-
+    //for each attraction in current dataset, update distance away
     public void updateAttractionDistances(){
         for(Attraction att: workingDataset){
             att.setDistanceAway(Distance.distanceBetweenPoints(loc,new LatLng(att.getLat(),att.getLon())));
-            Log.d("AJQ", "yoyoyo");
         }
 
     }
 
+    //call to get devices position
     public void getLocationUpdate(){
         if (((PermissionsHandler) getActivity()).checkPermissionsFromFrag()) {
             locationService = new LocationService(getContext(), this);
         }
     }
 
+    //use position to update interface with distances to attractions, reorder if appropriate
     @Override
     public void locationUpdate(LatLng latLng) {
         locationService.suspendUpdates();
@@ -245,10 +262,7 @@ public class ShowCategory extends Fragment implements LocationService.LocationSe
                 refreshInterface();
             }
         }
-
         distanceAway.setEnabled(true);
-
-
     }
 
     @Override
@@ -256,7 +270,7 @@ public class ShowCategory extends Fragment implements LocationService.LocationSe
         Toast.makeText(getContext(),error,Toast.LENGTH_LONG).show();
     }
 
-
+    //set sort state based on radio buttons
     class RadioButtonListener implements RadioGroup.OnCheckedChangeListener{
 
 
@@ -271,6 +285,7 @@ public class ShowCategory extends Fragment implements LocationService.LocationSe
         }
     }
 
+    //interface for callbacks from this fragment, must be implemented by host activity
     public interface ShowCategoryEventListener {
         void seeDataOnMapButtonClicked();
         void makeSuggestionsButtonClicked();

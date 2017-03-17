@@ -36,7 +36,7 @@ public class ViewBuilders {
 
 
         if (att.getPictureLocationSmall()!=null){
-            //Todo code to get picture from server here
+
             View imageView = inf.inflate(R.layout.layout_image_view,layout,true);
             ImageView imageHolder = (ImageView) imageView.findViewById(R.id.image_thumbnail);
 

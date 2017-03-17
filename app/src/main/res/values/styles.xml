@@ -12,6 +12,7 @@
         <item name="android:checkboxStyle">@style/CheckButtonStyle</item>
 
 
+
     </style>
 
     <style name="AppAltTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -30,7 +31,9 @@
     </style>
 
     <style name="ButtonStyle" parent="android:Widget.Button">
-        <item name="android:background">@drawable/background_transparent_white_outline_rounded_corners</item>
+        <item name="android:background">
+            @drawable/background_transparent_white_outline_rounded_corners
+        </item>
         <item name="android:textColor">@color/white_color</item>
     </style>
 
@@ -45,18 +48,20 @@
 
     </style>
 
-   <style name="CheckButtonStyle" parent="android:Widget.CompoundButton.CheckBox">
-       <item name="android:textColor">@color/white_color</item>
+    <style name="CheckButtonStyle" parent="android:Widget.CompoundButton.CheckBox">
+        <item name="android:textColor">@color/white_color</item>
 
 
-
-
-   </style>
+    </style>
 
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+
+
+
 
 
 </resources>

@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.BundleCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -30,6 +31,7 @@ import com.example.tonyquick.thequicklawsonguidetohaarlem.adapters.AttractionAda
 import com.example.tonyquick.thequicklawsonguidetohaarlem.adapters.MainMenuAdapter;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.fragments.AttractionEditorFragment;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.fragments.DisplayAttraction;
+import com.example.tonyquick.thequicklawsonguidetohaarlem.fragments.GettingAroundFragment;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.fragments.MainMenuFragment;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.fragments.MapFragmentMain;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.fragments.ShowCategory;
@@ -67,8 +69,9 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
     public static final String STATE_PHOTO_OPPORTUNITIES = "Photo Opportunities";
     public static final String STATE_THINGS_TO_DO = "Things to do";
     public static final String STATE_DUTCH_TASTE = "Dutch Taste Test";
-    public static final String STATE_CATS = "Cats of Haarlem";
+    public static final String STATE_ALBUM = "Album";
     public static final String STATE_GETTING_AROUND = "Getting Around";
+    public static final String ALBUM_DATA_KEY = "albumdata";
 
 
     private FirebaseDatabase mDatabase;
@@ -85,7 +88,6 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
     private AuthListener authListener;
 
     private MenuHandler menuHandler;
-
 
     private DisplayAttraction displayAttraction;
     private ArrayList<MenuItem> menuItems;
@@ -148,9 +150,7 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
         if (mainFrag==null){
             mainFrag = MainMenuFragment.newInstance(menuItems,menuLeft,menuRight);
             fragMan.beginTransaction().add(R.id.main_frame,mainFrag).commit();
-
         }
-
     }
 
     @Override
@@ -158,8 +158,6 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
         super.onStart();
         authListener = new AuthListener();
         mAuth.addAuthStateListener(new AuthListener());
-
-
     }
 
     @Override
@@ -176,20 +174,28 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
         showCategory = ShowCategory.newInstance(i.getTitle());
         Log.d("AJQ",i.getTitle());
         fragMan.beginTransaction().replace(R.id.main_frame,showCategory,"showCat").setCustomAnimations(R.anim.fade_in,R.anim.fade_out).addToBackStack("main").commit();
-        FragmentTransaction fragTrans = fragMan.beginTransaction();
-        fragTrans.replace(R.id.main_frame,showCategory,"showCat");
-        fragTrans.setCustomAnimations(R.anim.fade_in,R.anim.fade_out);
-
-
+        //FragmentTransaction fragTrans = fragMan.beginTransaction();
+        //fragTrans.replace(R.id.main_frame,showCategory,"showCat");
+        //fragTrans.setCustomAnimations(R.anim.fade_in,R.anim.fade_out);
     }
 
     @Override
     public void onSmallIconClicked(MenuItem m) {
 
+
         currentState = m.getTitle();
-        mapFrag = MapFragmentMain.newInstance(STATE_RESTAURANTS,MapFragmentMain.MAP_STATE_SHOW_ATT);
-        fragMan.beginTransaction().replace(R.id.main_frame,mapFrag,"mapfrag").commit();
-        Log.d("Ajq","assume we are doing this");
+        if (currentState.equals(MainActivity.STATE_GETTING_AROUND)){
+            GettingAroundFragment gettingAroundFragment = GettingAroundFragment.newInstance();
+            fragMan.beginTransaction().replace(R.id.main_frame,gettingAroundFragment,"gettingaroundfrag").addToBackStack("maintogettingaround").commit();
+        }else if (currentState.equals(MainActivity.STATE_ALBUM)){
+            Intent i = new Intent(this,AlbumActivity.class);
+            Bundle b = new Bundle();
+            b.putParcelableArrayList(ALBUM_DATA_KEY,list.getAlbumImages());
+            i.putExtras(b);
+            startActivity(i);
+
+        }
+
 
     }
 
@@ -240,6 +246,7 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
 
         }else{
             super.onBackPressed();
+
         }
 
 
@@ -420,11 +427,11 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
                 String password = passwordEditText.getText().toString();
 
                 if (username.equals("")){
-                    Toast.makeText(getContext(),"Username cannot be empty",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"Username cannot be empty",Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (password.equals("")){
-                    Toast.makeText(getContext(),"Password cannot be empty",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"Password cannot be empty",Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -440,9 +447,6 @@ public class MainActivity extends AppCompatActivity implements MainMenuAdapter.O
                         }
                     }
                 });
-
-
-
 
             }
         }

@@ -29,9 +29,6 @@ public class AttractionGenericViewHolder extends ViewHolder {
         title = (TextView)itemView.findViewById(R.id.card_att_generic_title);
         types = (TextView)itemView.findViewById(R.id.card_att_generic_types);
 
-
-
-
     }
 
     public void updateUI(Attraction a, final AttractionGenericAdapter.AttractionGenClickListener listener, Context c){

@@ -6,15 +6,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,18 +33,15 @@ import com.example.tonyquick.thequicklawsonguidetohaarlem.services.AttractionLis
 import com.example.tonyquick.thequicklawsonguidetohaarlem.services.GetFirebaseData;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.utilities.BitmapDecoder;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.utilities.UploadPictures;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -57,7 +50,7 @@ public class AttractionEditorFragment extends Fragment implements CheckBox.OnChe
     CheckBox isRestaurantCB, isBarCB, isCoffeeShopCB, isCafeCB, isThingToDoCB, isPhotoOpCB;
     TextView imageText, latText, lonText;
     EditText attTitleEditTxt, attDescriptionEditTxt;
-    Button submitBtn, findOnMapBtn, addImageBtn, deleteBtn;
+    Button submitBtn, findOnMapBtn, addImageBtn, deleteBtn, searchGoogleBtn;
     LinearLayout attributeHolder;
     View v;
 
@@ -86,6 +79,7 @@ public class AttractionEditorFragment extends Fragment implements CheckBox.OnChe
     public static final String STATE_ATTRACTION_EDITOR_MANAGE_SUGGESTIONS = "MANAGE SUGGESTIONS";
 
     private final int IMAGE_SELECTOR_REQ = 501;
+    private final int PLACE_AUTOCOMPLETE_REQ = 502;
 
     ImageView testImageView;
 
@@ -94,8 +88,6 @@ public class AttractionEditorFragment extends Fragment implements CheckBox.OnChe
 
     private String status;
     private String calledFrom;  //indicates which menu this fragment was called from, if relevant
-
-
 
 
     public AttractionEditorFragment() {
@@ -141,6 +133,33 @@ public class AttractionEditorFragment extends Fragment implements CheckBox.OnChe
                 title.setText(R.string.verify_suggestion);
                 break;
         }
+
+        searchGoogleBtn = (Button) v.findViewById(R.id.search_google);
+        searchGoogleBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("AJQ","I've been clicked");
+                try{
+                    AutocompleteFilter filter = new AutocompleteFilter.Builder()
+                            .setTypeFilter(Place.TYPE_COUNTRY)
+                            .setCountry("NL")
+                            .build();
+                    Intent i = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
+                            .setFilter(filter)
+                            .build(getActivity());
+
+                    startActivityForResult(i,PLACE_AUTOCOMPLETE_REQ);
+
+                }catch (GooglePlayServicesRepairableException googlePSRE){
+                    Log.d("AJQ RepairableException",googlePSRE.toString());
+
+                }catch (GooglePlayServicesNotAvailableException googlePSNAE){
+                    Log.d("AJQ NotAvailable",googlePSNAE.toString());
+
+                }
+
+            }
+        });
 
         imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 
@@ -285,11 +304,7 @@ public class AttractionEditorFragment extends Fragment implements CheckBox.OnChe
             }
 
             updateViews();
-
         }
-
-
-
 
         return v;
     }
@@ -515,7 +530,8 @@ public class AttractionEditorFragment extends Fragment implements CheckBox.OnChe
     }
 
     private void putPicInFrame(){
-        Bitmap pictureOfAttraction = BitmapDecoder.decodeSampledBitmapFromResource(getContext(),pictureFileLoc,8);
+     /**   Bitmap pictureOfAttraction = BitmapDecoder.decodeSampledBitmapFromResourceSetValues(getContext(),pictureFileLoc,8);
+
         ByteArrayOutputStream likeABaos = new ByteArrayOutputStream();
         Log.d("Ajq","here");
         pictureOfAttraction.compress(Bitmap.CompressFormat.JPEG,50,likeABaos);
@@ -524,15 +540,14 @@ public class AttractionEditorFragment extends Fragment implements CheckBox.OnChe
 
         Bitmap test = BitmapFactory.decodeByteArray(dataBytes,0,dataBytes.length);
         Log.d("Ajq","test no byes is: "+ test.getByteCount());
-
-        //Log.d("Ajq","No bytes: "+data.length);
+**/
         testImageView.getLayoutParams().height = 500;
-        //testImageView.requestLayout();
-        testImageView.setImageBitmap(test);
+        Bitmap selectedImage = BitmapDecoder.decodeBitmapByFrameSize(getContext(),pictureFileLoc,testImageView.getHeight(),testImageView.getWidth());
+        testImageView.setImageBitmap(selectedImage);
     }
 
 
-
+    //activity results for picture selector and place autocomplete
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -541,7 +556,23 @@ public class AttractionEditorFragment extends Fragment implements CheckBox.OnChe
                 if (resultCode== Activity.RESULT_OK){
                     pictureFileLoc = data.getData();
                     putPicInFrame();
+
+                    break;
                 }
+            case PLACE_AUTOCOMPLETE_REQ:
+                if (resultCode==Activity.RESULT_OK){
+                    Place place = PlaceAutocomplete.getPlace(getContext(),data);
+                    attTitleEditTxt.setText(place.getName());
+                    latText.setText(String.valueOf(place.getLatLng().latitude));
+                    lonText.setText(String.valueOf(place.getLatLng().longitude));
+
+                }else if(resultCode==PlaceAutocomplete.RESULT_ERROR){
+                    Toast.makeText(getContext(),"Unable to load Location",Toast.LENGTH_SHORT).show();
+
+                }
+
+
+
 
         }
     }
@@ -629,8 +660,8 @@ public class AttractionEditorFragment extends Fragment implements CheckBox.OnChe
             }
 
             if (pictureFileLoc!=null) {
-                UploadPictures marp = new UploadPictures(temp, pictureFileLoc,getContext());
-                marp.execute();
+                UploadPictures picUpload = new UploadPictures(temp, pictureFileLoc,getContext());
+                picUpload.execute();
             }
 
             finishListener.editorFinish();
@@ -652,9 +683,5 @@ public class AttractionEditorFragment extends Fragment implements CheckBox.OnChe
         void editorFinish();
         void getCoordsFromMap();
         void deleteSuggestion(Attraction current);
-
-
     }
-
-
 }

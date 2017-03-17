@@ -4,8 +4,8 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
@@ -16,6 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <service android:name="com.mapbox.mapboxsdk.telemetry.TelemetryService" />
+
         <activity
             android:name=".activties.MainActivity"
             android:screenOrientation="portrait">
@@ -35,14 +36,21 @@
         <activity
             android:name=".activties.AdminActivity"
             android:label="@string/title_activity_admin"
-            android:theme="@style/AppTheme"
             android:parentActivityName=".activties.MainActivity"
-            android:screenOrientation="portrait">
-
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activties.MainActivity" />
+        </activity>
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBnDwZ1nPahnzqasjTJxaA2arzu9D8ICEw" />
+
+        <activity
+            android:name=".activties.AlbumActivity"
+            android:theme="@style/AppTheme">
 
         </activity>
     </application>

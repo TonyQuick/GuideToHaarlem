@@ -69,9 +69,6 @@ public class DisplayAttraction extends Fragment {
         ViewBuilders viewBuilder = new ViewBuilders(altContext,altInflater);
         mainContent = viewBuilder.attractionCardContentBuilder(currentState, currentAtt,mainContent);
 
-
-
-
         listener = (MainActivity)getActivity();
         directionOnMap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,12 +77,7 @@ public class DisplayAttraction extends Fragment {
             }
         });
 
-
         return v;
-
-
-
-
     }
 
 

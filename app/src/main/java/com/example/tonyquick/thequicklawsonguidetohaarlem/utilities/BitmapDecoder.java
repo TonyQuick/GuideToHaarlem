@@ -21,12 +21,25 @@ import java.io.InputStream;
 
 public class BitmapDecoder {
 
-    private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+    private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight, boolean roatated) {
         // Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        int inSampleSize = 1;
+        // if image will be rotated, swap axis
+        int height = options.outHeight;
+        int width = options.outWidth;
 
+        // if image will be rotated, swap axis
+        if(roatated){
+            height = options.outWidth;
+            width = options.outHeight;
+            Log.d("AJQ","Swippy swapping axis");
+        }
+
+        Log.d("AJQ","reqHeight = "+reqHeight);
+        Log.d("AJQ","reqWidth = "+reqWidth);
+        Log.d("AJQ","image height = "+height);
+        Log.d("AJQ","image width = "+width);
+
+        int inSampleSize = 1;
         if (height > reqHeight || width > reqWidth) {
 
             final int halfHeight = height / 2;
@@ -39,11 +52,54 @@ public class BitmapDecoder {
                 inSampleSize *= 2;
             }
         }
+        Log.d("AJQ","in sample size = "+inSampleSize);
 
         return inSampleSize;
     }
 
-    public static Bitmap decodeSampledBitmapFromResource(Context context, Uri uri, int scaleBy) {
+    public static Bitmap decodeBitmapByFrameSize(Context context, Uri uri, int reqHeight, int reqWidth) {
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        try {
+
+
+            // First decode with inJustDecodeBounds=true to check dimensions
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+
+            InputStream inputStream = context.getContentResolver().openInputStream(uri);
+            BitmapFactory.decodeStream(inputStream,null,options);
+            inputStream.close();
+            inputStream = null;
+
+            //check if image requires roatating
+            boolean rotated = false;
+            if(getOrientation(uri,context)==90||getOrientation(uri,context)==270){
+                rotated = true;
+            }
+
+
+            // Calculate inSampleSize
+            options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight, rotated);
+
+            // Decode bitmap with inSampleSize set
+            options.inJustDecodeBounds = false;
+            inputStream = context.getContentResolver().openInputStream(uri);
+
+            Bitmap bMap= BitmapFactory.decodeStream(inputStream,null,options);
+            Log.d("AJQ","Image size in bytes: " + bMap.getByteCount());
+            Bitmap altered = modifyOrientation(bMap,uri,context);
+
+            return altered;
+
+        }catch (IOException e){
+            Log.d("AJQ",e.toString());
+            return null;
+        }
+
+    }
+
+    public static Bitmap decodeSampledBitmapFromResourceSetValues(Context context, Uri uri, int scaleBy) {
 
         // First decode with inJustDecodeBounds=true to check dimensions
         try {
@@ -63,12 +119,9 @@ public class BitmapDecoder {
 
             //options.inJustDecodeBounds = false;
 
-            Bitmap heyo= BitmapFactory.decodeStream(inputStream,null,options);
-            Log.d("AJQ","Image size in bytes: " + heyo.getByteCount());
-
-
-            Bitmap altered = modifyOrientation(heyo,uri,context);
-
+            Bitmap bMap= BitmapFactory.decodeStream(inputStream,null,options);
+            Log.d("AJQ","Image size in bytes: " + bMap.getByteCount());
+            Bitmap altered = modifyOrientation(bMap,uri,context);
 
             return altered;
 
@@ -79,24 +132,33 @@ public class BitmapDecoder {
 
     }
 
-    public static Bitmap modifyOrientation(Bitmap bitmap, Uri uri, Context context) throws IOException {
-        ExifInterface ei = new ExifInterface(uri.getPath());
-        int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
 
+    static int getOrientation(Uri uri, Context context) throws IOException{
+        /*ExifInterface ei = new ExifInterface(uri.getPath());
+        int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
+        */
 
         String[] orientationColumn = {MediaStore.Images.Media.ORIENTATION};
         Cursor cur = context.getContentResolver().query(uri,orientationColumn,null,null,null);
 
-        orientation = -1;
+        int orientation = -1;
         if (cur != null && cur.moveToFirst()) {
             orientation = cur.getInt(cur.getColumnIndex(orientationColumn[0]));
         }
+        return orientation;
+    }
 
+
+
+
+    static Bitmap modifyOrientation(Bitmap bitmap, Uri uri, Context context) throws IOException {
+
+
+        int orientation = getOrientation(uri,context);
         Log.d("AJQ","orientation: " + orientation);
 
         switch (orientation) {
             case 90:
-                Log.d("Ajq","entered here");
                 return rotate(bitmap, 90);
 
             case 180:
@@ -116,13 +178,13 @@ public class BitmapDecoder {
         }
     }
 
-    public static Bitmap rotate(Bitmap bitmap, float degrees) {
+    static Bitmap rotate(Bitmap bitmap, float degrees) {
         Matrix matrix = new Matrix();
         matrix.postRotate(degrees);
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
     }
 
-    public static Bitmap flip(Bitmap bitmap, boolean horizontal, boolean vertical) {
+    static Bitmap flip(Bitmap bitmap, boolean horizontal, boolean vertical) {
         Matrix matrix = new Matrix();
         matrix.preScale(horizontal ? -1 : 1, vertical ? -1 : 1);
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);

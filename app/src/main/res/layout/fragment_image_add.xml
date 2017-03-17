@@ -1,0 +1,59 @@
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white_color"
+    tools:context="com.example.tonyquick.thequicklawsonguidetohaarlem.fragments.ImageAddFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="false">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="Submit"
+            android:layout_margin="5dp"
+            android:layout_marginBottom="15dp"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/submit_button"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:hint="@string/image_enter_title"
+            android:id="@+id/title_edittext"
+            android:layout_above="@id/submit_button"
+            />
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/title_textview"
+            android:text="@string/add_image"
+            android:textSize="22sp"
+            android:layout_margin="5dp"/>
+
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/title_edittext"
+            android:layout_below="@id/title_textview"
+            android:background="@color/light_grey"
+            android:id="@+id/selected_image_view"
+
+            android:src="@android:drawable/ic_menu_add"
+            android:clickable="true" />
+
+
+
+
+
+    </RelativeLayout>
+
+
+</android.support.v7.widget.CardView>

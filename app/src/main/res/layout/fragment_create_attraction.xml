@@ -25,13 +25,15 @@
             android:text="@string/attraction_instructions"
             android:layout_marginBottom="5dp"/>
 
-        <EditText
+
+            <!-- android:hint="@string/attraction_editor_search_google" -->
+        <Button
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:hint="@string/attraction_editor_search_google"
-            android:id="@+id/search_bar"
-            android:layout_marginBottom="5dp"/>
+            android:layout_height="40dp"
+            android:id="@+id/search_google"
+            android:layout_margin="5dp"
+            android:text="Search Google"
+            />
 
         <TextView
             android:layout_width="match_parent"
@@ -149,7 +151,7 @@
             android:imeOptions="actionNext"
             android:layout_marginBottom="20dp"
             android:background="@color/edittext_background_low_alpha"
-/>
+            />
 
         <include layout="@layout/separating_line_white"/>
 

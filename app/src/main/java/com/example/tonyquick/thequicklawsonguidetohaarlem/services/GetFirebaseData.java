@@ -3,6 +3,7 @@ package com.example.tonyquick.thequicklawsonguidetohaarlem.services;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
+import com.example.tonyquick.thequicklawsonguidetohaarlem.models.AlbumItem;
 import com.example.tonyquick.thequicklawsonguidetohaarlem.models.Attraction;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -21,11 +22,12 @@ import java.util.ArrayList;
 public class GetFirebaseData {
 
     FirebaseDataHandlerInterface listener;
-    DatabaseReference attractions;
-    DatabaseReference suggestions;
+    DatabaseReference attractions, suggestions, album, cats;
 
     public static final String ATTRACTIONS_REFERENCE = "Attractions";
     public static final String SUGGESTIONS_REFERENCE = "Suggestions";
+    public static final String ALBUM_REFERENCE = "Album";
+    public static final String CATS_REFERENCE = "Cats";
 
 
 
@@ -35,35 +37,8 @@ public class GetFirebaseData {
 
     }
 
-   /* public void getDataset(){
-        FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference dbRef = mDatabase.getReference();
 
-        final ValueEventListener valListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                ArrayList<Attraction> dataset = new ArrayList<>();
-                for (DataSnapshot child: dataSnapshot.getChildren()){
-                    Log.d("AJQ",child.toString());
-                    dataset.add(child.getValue(Attraction.class));
-
-                }
-
-                listener.initialDataset(dataset);
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-
-        dbRef.child(ATTRACTIONS_REFERENCE).addListenerForSingleValueEvent(valListener);
-
-    }*/
-
-    void addChangeListener(){
+    void addChangeListenerAttractions(){
         attractions = FirebaseDatabase.getInstance().getReference().child(ATTRACTIONS_REFERENCE);
         final ChildEventListener changeListener = new ChildEventListener() {
             @Override
@@ -135,6 +110,41 @@ public class GetFirebaseData {
 
     }
 
+    void addChangeListenerAlbum(){
+        album = FirebaseDatabase.getInstance().getReference().child(ALBUM_REFERENCE);
+        final ChildEventListener changeListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                listener.albumItemAdded(dataSnapshot.getValue(AlbumItem.class));
+                Log.d("Ajq","Album child has been added");
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                listener.albumItemRemoved(dataSnapshot.getKey());
+                Log.d("AJQ","Album child removed");
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        album.addChildEventListener(changeListener);
+
+    }
+
 
 
 
@@ -149,6 +159,8 @@ public class GetFirebaseData {
         void suggestionAdded(Attraction a);
         void suggestionRemoved(String id);
 
+        void albumItemAdded(AlbumItem a);
+        void albumItemRemoved(String id);
 
     }
 

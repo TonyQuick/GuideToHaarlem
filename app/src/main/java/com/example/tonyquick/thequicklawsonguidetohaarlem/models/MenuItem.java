@@ -83,7 +83,7 @@ public class MenuItem implements Parcelable {
 
     }
     public static MenuItem getMenuLeft(){
-        return new MenuItem(MainActivity.STATE_CATS,R.drawable.cats_of_haarlem);
+        return new MenuItem(MainActivity.STATE_ALBUM,R.drawable.cats_of_haarlem);
     }
 
     public static  MenuItem getMenuRight(){

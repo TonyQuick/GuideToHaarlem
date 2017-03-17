@@ -8,6 +8,11 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 
 public class Distance {
 
+
+    /**
+     *Utility class, haversine method to calculate distance between 2 sets of coords
+     *
+     */
     public static double distanceBetweenPoints(LatLng loc, LatLng loc2){
 
         double lat1 = loc.getLatitude();
@@ -15,7 +20,7 @@ public class Distance {
         double lon1 = loc.getLongitude();
         double lon2 = loc.getLongitude();
 
-        final int R = 6371; // Radius of the earth
+        final int R = 6371; // Radius of the planet
 
         Double latDistance = Math.toRadians(lat2 - lat1);
         Double lonDistance = Math.toRadians(lon2 - lon1);

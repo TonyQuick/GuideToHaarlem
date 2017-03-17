@@ -25,6 +25,7 @@
 
     <color name="red">#df0909</color>
     <color name="map_route">#30afbe</color>
+    <color name="hyperlink">#59accf</color>
 
 
 </resources>
